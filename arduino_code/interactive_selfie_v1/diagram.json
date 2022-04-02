@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "author": "Arad Eizen",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-nano", "id": "nano", "top": -20, "left": 305, "attrs": {} },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels1",
+      "top": 0,
+      "left": -900,
+      "attrs": { "rows": "1", "cols": "50", "matrixBrightness": "10" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels2",
+      "top": -1300,
+      "left": 400,
+      "attrs": { "rows": "50", "cols": "1", "matrixBrightness": "10" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels3",
+      "top": 0,
+      "left": 560,
+      "rotate": 180,
+      "attrs": { "rows": "1", "cols": "50", "matrixBrightness": "10" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels4",
+      "top": 160,
+      "left": 400,
+      "rotate": 180,
+      "attrs": { "rows": "50", "cols": "1", "matrixBrightness": "10" }
+    }
+  ],
+  "connections": [
+    [ "nano:GND.1", "neopixels1:VSS", "black", [ "v30", "h0" ] ],
+    [ "nano:GND.1", "neopixels2:VSS", "black", [ "v30", "h0" ] ],
+    [ "nano:GND.1", "neopixels3:VSS", "black", [ "v30", "h0" ] ],
+    [ "nano:GND.1", "neopixels4:VSS", "black", [ "v30", "h0" ] ],
+    [ "nano:4", "neopixels3:DIN", "darkorange", [ "v-20", "h0" ] ],
+    [ "nano:5", "neopixels2:DIN", "yellow", [ "v-30", "h0" ] ],
+    [ "nano:6", "neopixels4:DIN", "lime", [ "v70", "h0" ] ],
+    [ "nano:7", "neopixels1:DIN", "green", [ "v-20", "h0" ] ],
+    [ "nano:5V", "neopixels1:VDD", "red", [ "v20", "h0" ] ],
+    [ "nano:5V", "neopixels2:VDD", "red", [ "v20", "h0" ] ],
+    [ "nano:5V", "neopixels3:VDD", "red", [ "v20", "h0" ] ],
+    [ "nano:5V", "neopixels4:VDD", "red", [ "v20", "h0" ] ]
+  ]
+}

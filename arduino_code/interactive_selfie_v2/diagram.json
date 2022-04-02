@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "author": "Arad Eizen",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": -23.9, "left": -600.25, "attrs": {} },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels1",
+      "top": -531.08,
+      "left": -1498.09,
+      "attrs": { "rows": "20", "cols": "90", "pixelate": "1", "matrixBrightness": ".8" }
+    },
+    {
+      "type": "wokwi-slide-potentiometer",
+      "id": "pot1",
+      "top": 253.49,
+      "left": -618.53,
+      "attrs": { "travelLength": "30", "value": "50" }
+    },
+    {
+      "type": "wokwi-slide-potentiometer",
+      "id": "pot2",
+      "top": 372.42,
+      "left": -614.22,
+      "attrs": { "travelLength": "30", "value": "50" }
+    },
+    {
+      "type": "wokwi-slide-potentiometer",
+      "id": "pot3",
+      "top": 494.16,
+      "left": -616.76,
+      "attrs": { "travelLength": "30", "value": "50" }
+    },
+    {
+      "type": "wokwi-analog-joystick",
+      "id": "joystick1",
+      "top": -27.93,
+      "left": -772.3,
+      "attrs": {}
+    }
+  ],
+  "connections": [
+    [ "esp:10", "neopixels1:DIN", "green", [ "*" ] ],
+    [ "esp:TX0", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX0", "$serialMonitor:TX", "", [] ],
+    [ "esp:GND.1", "neopixels1:VSS", "black", [ "h10.33", "v-210.16" ] ],
+    [ "esp:VIN", "neopixels1:VDD", "red", [ "h-16.83", "v-228.22" ] ],
+    [ "esp:D23", "neopixels1:DIN", "green", [ "h16.75", "v-74.77" ] ],
+    [ "pot1:VCC", "esp:VIN", "red", [ "h-47.68", "v-164.86" ] ],
+    [ "pot2:VCC", "esp:VIN", "red", [ "h-50.66", "v-281.08" ] ],
+    [ "pot1:SIG", "esp:D25", "green", [ "h-14", "v-205.2" ] ],
+    [ "pot2:SIG", "esp:D26", "green", [ "h-24.05", "v-321.96" ] ],
+    [ "pot1:GND", "esp:GND.2", "black", [ "v-38.3", "h-244.99", "v-134.17" ] ],
+    [ "pot2:GND", "esp:GND.2", "black", [ "v-157.23", "h-247.97", "v-133.62" ] ],
+    [ "pot3:GND", "esp:GND.2", "black", [ "v-279.19", "h-246.65", "v-133.67" ] ],
+    [ "pot3:VCC", "esp:VIN", "red", [ "h-48.51", "v-403.42" ] ],
+    [ "pot3:SIG", "esp:D27", "green", [ "h-30.43", "v-463.88" ] ],
+    [ "joystick1:GND", "esp:GND.2", "black", [ "v0" ] ],
+    [ "joystick1:VCC", "esp:VIN", "red", [ "v0" ] ],
+    [ "joystick1:HORZ", "esp:D12", "green", [ "v0" ] ],
+    [ "joystick1:VERT", "esp:D13", "green", [ "v0" ] ]
+  ]
+}

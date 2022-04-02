@@ -1,0 +1,237 @@
+{
+  "version": 1,
+  "author": "Arad Eizen",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-arduino-nano",
+      "id": "nano",
+      "top": 1100,
+      "left": -1200,
+      "rotate": 90,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels1",
+      "top": 0,
+      "left": 0,
+      "rotate": 90,
+      "attrs": { "rows": "90", "cols": "1", "pixelate": "1" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels2",
+      "top": 24,
+      "left": 0,
+      "rotate": -90,
+      "attrs": { "rows": "90", "cols": "1", "pixelate": "1" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels3",
+      "top": 48,
+      "left": 0,
+      "rotate": 90,
+      "attrs": { "rows": "90", "cols": "1", "pixelate": "1" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels4",
+      "top": 72,
+      "left": 0,
+      "rotate": -90,
+      "attrs": { "rows": "90", "cols": "1", "pixelate": "1" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels5",
+      "top": 96,
+      "left": 0,
+      "rotate": 90,
+      "attrs": { "rows": "90", "cols": "1", "pixelate": "1" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels6",
+      "top": 120,
+      "left": 0,
+      "rotate": -90,
+      "attrs": { "rows": "90", "cols": "1", "pixelate": "1" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels7",
+      "top": 144,
+      "left": 0,
+      "rotate": 90,
+      "attrs": { "rows": "90", "cols": "1", "pixelate": "1" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels8",
+      "top": 168,
+      "left": 0,
+      "rotate": -90,
+      "attrs": { "rows": "90", "cols": "1", "pixelate": "1" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels9",
+      "top": 192,
+      "left": 0,
+      "rotate": 90,
+      "attrs": { "rows": "90", "cols": "1", "pixelate": "1" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels10",
+      "top": 216,
+      "left": 0,
+      "rotate": -90,
+      "attrs": { "rows": "90", "cols": "1", "pixelate": "1" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels11",
+      "top": 240,
+      "left": 0,
+      "rotate": 90,
+      "attrs": { "rows": "90", "cols": "1", "pixelate": "1" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels12",
+      "top": 264,
+      "left": 0,
+      "rotate": -90,
+      "attrs": { "rows": "90", "cols": "1", "pixelate": "1" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels13",
+      "top": 288,
+      "left": 0,
+      "rotate": 90,
+      "attrs": { "rows": "90", "cols": "1", "pixelate": "1" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels14",
+      "top": 312,
+      "left": 0,
+      "rotate": -90,
+      "attrs": { "rows": "90", "cols": "1", "pixelate": "1" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels15",
+      "top": 336,
+      "left": 0,
+      "rotate": 90,
+      "attrs": { "rows": "90", "cols": "1", "pixelate": "1" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels16",
+      "top": 360,
+      "left": 0,
+      "rotate": -90,
+      "attrs": { "rows": "90", "cols": "1", "pixelate": "1" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels17",
+      "top": 384,
+      "left": 0,
+      "rotate": 90,
+      "attrs": { "rows": "90", "cols": "1", "pixelate": "1" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels18",
+      "top": 408,
+      "left": 0,
+      "rotate": -90,
+      "attrs": { "rows": "90", "cols": "1", "pixelate": "1" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels19",
+      "top": 432,
+      "left": 0,
+      "rotate": 90,
+      "attrs": { "rows": "90", "cols": "1", "pixelate": "1" }
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "neopixels20",
+      "top": 456,
+      "left": 0,
+      "rotate": -90,
+      "attrs": { "rows": "90", "cols": "1", "pixelate": "1" }
+    }
+  ],
+  "connections": [
+    [ "nano:GND.1", "neopixels1:VSS", "black", [ "h-60", "v-190", "h130", "v0" ] ],
+    [ "nano:GND.1", "neopixels2:VSS", "black", [ "h-60", "v-190", "h2300", "v0" ] ],
+    [ "nano:GND.1", "neopixels3:VSS", "black", [ "h-60", "v-190", "h130", "v0" ] ],
+    [ "nano:GND.1", "neopixels4:VSS", "black", [ "h-60", "v-190", "h2300", "v0" ] ],
+    [ "nano:GND.1", "neopixels5:VSS", "black", [ "h-60", "v-190", "h130", "v0" ] ],
+    [ "nano:GND.1", "neopixels6:VSS", "black", [ "h-60", "v-190", "h2300", "v0" ] ],
+    [ "nano:GND.1", "neopixels7:VSS", "black", [ "h-60", "v-190", "h130", "v0" ] ],
+    [ "nano:GND.1", "neopixels8:VSS", "black", [ "h-60", "v-190", "h2300", "v0" ] ],
+    [ "nano:GND.1", "neopixels9:VSS", "black", [ "h-60", "v-190", "h130", "v0" ] ],
+    [ "nano:GND.1", "neopixels10:VSS", "black", [ "h-60", "v-190", "h2300", "v0" ] ],
+    [ "nano:GND.1", "neopixels11:VSS", "black", [ "h-60", "v-190", "h130", "v0" ] ],
+    [ "nano:GND.1", "neopixels12:VSS", "black", [ "h-60", "v-190", "h2300", "v0" ] ],
+    [ "nano:GND.1", "neopixels13:VSS", "black", [ "h-60", "v-190", "h130", "v0" ] ],
+    [ "nano:GND.1", "neopixels14:VSS", "black", [ "h-60", "v-190", "h2300", "v0" ] ],
+    [ "nano:GND.1", "neopixels15:VSS", "black", [ "h-60", "v-190", "h130", "v0" ] ],
+    [ "nano:GND.1", "neopixels16:VSS", "black", [ "h-60", "v-190", "h2300", "v0" ] ],
+    [ "nano:GND.1", "neopixels17:VSS", "black", [ "h-60", "v-190", "h130", "v0" ] ],
+    [ "nano:GND.1", "neopixels18:VSS", "black", [ "h-60", "v-190", "h2300", "v0" ] ],
+    [ "nano:GND.1", "neopixels19:VSS", "black", [ "h-60", "v-190", "h130", "v0" ] ],
+    [ "nano:GND.1", "neopixels20:VSS", "black", [ "h-60", "v-190", "h2300", "v0" ] ],
+    [ "nano:5V", "neopixels1:VDD", "red", [ "h-50", "v-160", "h130", "v0" ] ],
+    [ "nano:5V", "neopixels2:VDD", "red", [ "h-50", "v-160", "h2300", "v0" ] ],
+    [ "nano:5V", "neopixels3:VDD", "red", [ "h-50", "v-160", "h130", "v0" ] ],
+    [ "nano:5V", "neopixels4:VDD", "red", [ "h-50", "v-160", "h2300", "v0" ] ],
+    [ "nano:5V", "neopixels5:VDD", "red", [ "h-50", "v-160", "h130", "v0" ] ],
+    [ "nano:5V", "neopixels6:VDD", "red", [ "h-50", "v-160", "h2300", "v0" ] ],
+    [ "nano:5V", "neopixels7:VDD", "red", [ "h-50", "v-160", "h130", "v0" ] ],
+    [ "nano:5V", "neopixels8:VDD", "red", [ "h-50", "v-160", "h2300", "v0" ] ],
+    [ "nano:5V", "neopixels9:VDD", "red", [ "h-50", "v-160", "h130", "v0" ] ],
+    [ "nano:5V", "neopixels10:VDD", "red", [ "h-50", "v-160", "h2300", "v0" ] ],
+    [ "nano:5V", "neopixels11:VDD", "red", [ "h-50", "v-160", "h130", "v0" ] ],
+    [ "nano:5V", "neopixels12:VDD", "red", [ "h-50", "v-160", "h2300", "v0" ] ],
+    [ "nano:5V", "neopixels13:VDD", "red", [ "h-50", "v-160", "h130", "v0" ] ],
+    [ "nano:5V", "neopixels14:VDD", "red", [ "h-50", "v-160", "h2300", "v0" ] ],
+    [ "nano:5V", "neopixels15:VDD", "red", [ "h-50", "v-160", "h130", "v0" ] ],
+    [ "nano:5V", "neopixels16:VDD", "red", [ "h-50", "v-160", "h2300", "v0" ] ],
+    [ "nano:5V", "neopixels17:VDD", "red", [ "h-50", "v-160", "h130", "v0" ] ],
+    [ "nano:5V", "neopixels18:VDD", "red", [ "h-50", "v-160", "h2300", "v0" ] ],
+    [ "nano:5V", "neopixels19:VDD", "red", [ "h-50", "v-160", "h130", "v0" ] ],
+    [ "nano:5V", "neopixels20:VDD", "red", [ "h-50", "v-160", "h2300", "v0" ] ],
+    [ "nano:12", "neopixels1:DIN", "green", [ "h30", "v0" ] ],
+    [ "nano:11", "neopixels5:DIN", "green", [ "h30", "v0" ] ],
+    [ "nano:10", "neopixels9:DIN", "green", [ "h30", "v0" ] ],
+    [ "nano:9", "neopixels13:DIN", "green", [ "h30", "v0" ] ],
+    [ "nano:8", "neopixels17:DIN", "green", [ "h30", "v0" ] ],
+    [ "neopixels1:DOUT", "neopixels2:DIN", "green", [ "h-20", "v-290", "h2100", "v0" ] ],
+    [ "neopixels3:DIN", "neopixels2:DOUT", "green", [ "h-20", "v-290", "h2100", "v0" ] ],
+    [ "neopixels3:DOUT", "neopixels4:DIN", "green", [ "h-20", "v-290", "h2100", "v0" ] ],
+    [ "neopixels5:DOUT", "neopixels6:DIN", "green", [ "h-20", "v-290", "h2100", "v0" ] ],
+    [ "neopixels7:DIN", "neopixels6:DOUT", "green", [ "h-20", "v-290", "h2100", "v0" ] ],
+    [ "neopixels7:DOUT", "neopixels8:DIN", "green", [ "h-20", "v-290", "h2100", "v0" ] ],
+    [ "neopixels9:DOUT", "neopixels10:DIN", "green", [ "h-20", "v-290", "h2100", "v0" ] ],
+    [ "neopixels11:DIN", "neopixels10:DOUT", "green", [ "h-20", "v-490", "h2100", "v0" ] ],
+    [ "neopixels11:DOUT", "neopixels12:DIN", "green", [ "h-20", "v-490", "h2100", "v0" ] ],
+    [ "neopixels13:DOUT", "neopixels14:DIN", "green", [ "h-20", "v-490", "h2100", "v0" ] ],
+    [ "neopixels15:DIN", "neopixels14:DOUT", "green", [ "h-20", "v-490", "h2100", "v0" ] ],
+    [ "neopixels15:DOUT", "neopixels16:DIN", "green", [ "h-20", "v-490", "h2100", "v0" ] ],
+    [ "neopixels17:DOUT", "neopixels18:DIN", "green", [ "h-20", "v-490", "h2100", "v0" ] ],
+    [ "neopixels19:DIN", "neopixels18:DOUT", "green", [ "h-20", "v-490", "h2100", "v0" ] ],
+    [ "neopixels19:DOUT", "neopixels20:DIN", "green", [ "h-20", "v-490", "h2100", "v0" ] ]
+  ]
+}
