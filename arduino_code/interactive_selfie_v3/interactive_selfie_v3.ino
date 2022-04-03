@@ -193,8 +193,8 @@ void setup()
 	// set all electrodes threshholds
 	mpr121.setThresholds(40, 10);
 	// 1 readings for touch and release
-	mpr121.writeRegister(MPR121_DEBOUNCE, 1 | (1 << 3));
-	// charge electrodes with 63mA in 1us
+	mpr121.writeRegister(MPR121_DEBOUNCE, 1 | (1 << 4));
+	// charge electrodes with 63uA in 1us
 	mpr121.writeRegister(MPR121_CONFIG1, 63);
 	mpr121.writeRegister(MPR121_CONFIG2, (3 << 3) | (2 << 5));
 	// auto config baseline and filters
