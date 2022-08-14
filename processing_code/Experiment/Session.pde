@@ -49,7 +49,8 @@ class TSession extends GraphicsDict {
   Button button_head_leftright;
   Button button_hand_leftright;
   Checkbox button_take_pic;
-  Text_Input text_get_mail;
+  Text_Input text_get_mail0;
+  Text_Input text_get_mail1;
   Text_Input text_further_ideas;
   Text_Input text_get_age;
   Text_Input text_get_profession;
@@ -115,7 +116,7 @@ class TSession extends GraphicsDict {
     println("Connected COM ports:");
     printArray(Serial.list());
     if (Serial.list().length > 0)
-      lightPort = new Serial(parent, Serial.list()[0], 115200);
+      lightPort = new Serial(parent, Serial.list()[Serial.list().length-1], 115200);
     lightPanel = new LightPanel(lightPort);
 
     input_clapping = new Input_Clapping(parent, logger, resetter);
@@ -191,11 +192,13 @@ class TSession extends GraphicsDict {
     allButtons.add(rb_handedness_right);
     allButtons.add(rb_handedness_left);
 
-    text_get_mail = new Text_Input(parent, 99, 243, 556, 1, Lang.ENGLISH);
+    text_get_mail0 = new Text_Input(parent, 99, 243, 240, 1, Lang.ENGLISH);
+    text_get_mail1 = new Text_Input(parent, 423, 243, 240, 1, Lang.ENGLISH);
     text_further_ideas = new Text_Input(parent, 197, 281, 1094, 3, Lang.HEBREW);
     text_get_age = new Text_Input(parent, 973, 286, 200, 1, Lang.ENGLISH);
     text_get_profession = new Text_Input(parent, 973, 387, 200, 1, Lang.HEBREW);
-    allTexts.add(text_get_mail);
+    allTexts.add(text_get_mail0);
+    allTexts.add(text_get_mail1);
     allTexts.add(text_further_ideas);
     allTexts.add(text_get_age);
     allTexts.add(text_get_profession);
@@ -345,6 +348,17 @@ class TSession extends GraphicsDict {
       if (button_next.touched(x, y)) {
         state = State.INTRO_2;
 
+        /* integration jump to mission 1: */
+        button_hand_updown.show();
+        button_hand_around.show();
+        button_clapping.show();
+        button_head_leftright.show();
+        button_hand_leftright.show();
+        missionNum = 1;
+        missionTimer = millis();
+        state = State.MISSION_1_SELECT;
+        /**/
+        
         /*        state = State.QUESTIONARE_6;   */
         /*     button_next.show();               */
       }
@@ -741,8 +755,9 @@ class TSession extends GraphicsDict {
       if (button_next.touched(x, y)) {
         logger.log("Selected_Selfie", selfie.getSelectedNum()+1);
         Text_Input.showOSK(Lang.ENGLISH);
-        text_get_mail.show();
-        text_get_mail.begin();
+        text_get_mail0.show();
+        text_get_mail0.begin();
+        text_get_mail1.show();
         checkbox_museum_publications.show();
         state = State.GET_EMAIL;
       }
@@ -750,17 +765,23 @@ class TSession extends GraphicsDict {
 
     case GET_EMAIL:
       checkbox_museum_publications.touched(x, y);
-      text_get_mail.touched(x, y);
+      if (text_get_mail0.touched(x, y)) {
+        text_get_mail1.end();
+      }
+      if (text_get_mail1.touched(x, y)) {
+        text_get_mail0.end();
+      }
       if (button_next.touched(x, y)) {
         Text_Input.hideOSK();
-        text_get_mail.hide();
-        text_get_mail.end();
+        text_get_mail0.hide();
+        text_get_mail0.end();
+        text_get_mail1.hide();
+        text_get_mail1.end();
         if (checkbox_museum_publications.getState()) {
-          // add paticipant to museum mailbox
+          // add participant to museum mailbox
         }
         checkbox_museum_publications.hide();
-        selfie.sendSelectedPic(text_get_mail.getText());
-        // send mail to text_get_mail.getText();
+        selfie.sendSelectedPic(text_get_mail0.getText()+"@"+text_get_mail1.getText());
         if (participating) {
           button_sel_question_1.show();
           button_sel_question_2.show();

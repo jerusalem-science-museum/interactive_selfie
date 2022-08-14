@@ -2,6 +2,8 @@ final color initColor = color(100, 255, 50);  // This is in HSB, but the rest of
 final int initX = 0;
 final int initY = 1000;
 
+final boolean LightPanelDebug = true;
+
 class LightPanel {
   Serial lightPort;
   color col;
@@ -20,23 +22,21 @@ class LightPanel {
     y = -1;
     targetX = initX;
     targetY = initY;
-    if (lightPort != null) lightPort.write("S -4\n");  // set light shape and size. positive number = circle. negative = square.
+    write("S -4\n");  // set light shape and size. positive number = circle. negative = square.
   }
 
   public void run() {
-    if (lightPort != null) {
-      if (targetCol != col) {
-        col = targetCol;
-        lightPort.write("C " + red(col) + " " + green(col) + " " + blue(col) + "\n");
-      }
-      if (targetX != x) {
-        x = targetX;
-        lightPort.write("X " + x + "\n");
-      }
-      if (targetY != Y) {
-        y = targetY;
-        lightPort.write("Y " + y + "\n");
-      }
+    if (targetCol != col) {
+      col = targetCol;
+      write("C " + red(col) + " " + green(col) + " " + blue(col) + "\n");
+    }
+    if (targetX != x) {
+      x = targetX;
+      write("X " + x + "\n");
+    }
+    if (targetY != y) {
+      y = targetY;
+      write("Y " + y + "\n");
     }
   }
 
@@ -57,10 +57,15 @@ class LightPanel {
   }
 
   public void setVertical(int i) {
-    x = i;
+    targetX = i;
   }
 
   public void setHorizontal(int i) {
-    y = i;
+    targetY = i;
+  }
+
+  private void write(String cmd) {
+    if (lightPort != null) lightPort.write(cmd);
+    if (LightPanelDebug) println("LightPanel cmd: " + cmd);
   }
 }
