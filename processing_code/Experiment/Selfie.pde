@@ -1,4 +1,5 @@
 import myselfie.emailer.SendMail;
+import org.apache.commons.validator.routines.EmailValidator;
 
 class Selfie {
   PApplet parent;
@@ -77,10 +78,11 @@ class Selfie {
   }
 
   public void sendSelectedPic(String target) {
-    int ati = target.indexOf("@");
-    if (ati == -1) return;
-    if (target.indexOf(".", ati) == -1) return;
-    
+    if (!EmailValidator.getInstance().isValid(target)) {
+      println("Illegal email address: " + target);
+      return;
+    }
+
     try {
       sendMail.send(target);
     }
