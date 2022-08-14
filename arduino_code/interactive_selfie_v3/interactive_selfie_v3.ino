@@ -79,7 +79,7 @@ void draw_pixel(int16_t x, int16_t y, CRGB c)
 		return;
 
 #ifndef IS_SIMULATOR
-	if (~y & 1) // simulator is connected in mirror
+	if (!(~y & 1)) // simulator is connected in mirror
 		x = LED_WIDTH - 1 - x;
 #endif
 
