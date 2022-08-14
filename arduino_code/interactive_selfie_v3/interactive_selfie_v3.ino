@@ -7,16 +7,29 @@
  */
 #include <Arduino.h>
 #include <FastLED.h>					// https://github.com/FastLED/FastLED
-#include <Adafruit_MPR121.h>	// https://github.com/adafruit/Adafruit_MPR121
 #include "serial_commands.h"
 
-// #define MPR121_ELEC						// undefine in simulator
+// #define IS_SIMULATOR
+
+#define MPR121_ELEC						// undefine in simulator
 #define UART_BAUDRATE					(115200)
-#define LED_A_PIN							(12)
-#define LED_B_PIN							(11)
-#define LED_C_PIN							(10)
-#define LED_D_PIN							(9)
-#define LED_E_PIN							(8)
+#ifdef IS_SIMULATOR
+	#define LED_A_PIN							(12)
+	#define LED_B_PIN							(11)
+	#define LED_C_PIN							(10)
+	#define LED_D_PIN							(9)
+	#define LED_E_PIN							(8)
+#else
+	#define LED_A_PIN							(2)
+	#define LED_B_PIN							(3)
+	#define LED_C_PIN							(4)
+	#define LED_D_PIN							(5)
+	#define LED_E_PIN							(6)	
+	// #define POT_X_PIN						(A0)
+	// #define POT_Y_PIN						(A1)
+	// #define POT_Z_PIN						(A2)
+#endif
+
 #define LED_WIDTH							(90)
 #define LED_HEIGHT						(20)
 #define LED_COUNT							(LED_WIDTH * LED_HEIGHT)
@@ -33,6 +46,7 @@
 #define ELEC_DEBOUNCE_OFF_MS	(300)
 
 #ifdef MPR121_ELEC
+#include <Adafruit_MPR121.h>	// https://github.com/adafruit/Adafruit_MPR121 MUST USE V1.0.5!
 Adafruit_MPR121 mpr121 = Adafruit_MPR121();
 #endif
 
@@ -64,8 +78,10 @@ void draw_pixel(int16_t x, int16_t y, CRGB c)
 	if (x < 0 || x >= LED_WIDTH || y < 0 || y >= LED_HEIGHT)
 		return;
 
+#ifndef IS_SIMULATOR
 	if (~y & 1) // simulator is connected in mirror
 		x = LED_WIDTH - 1 - x;
+#endif
 
 	if ((y / LED_STRIP_PER_GROUP) == led_group)
 		led_group_buff[x + (y % LED_STRIP_PER_GROUP) * LED_WIDTH] = c;
@@ -165,7 +181,7 @@ void cmd_cb(const char *cmd_line, uint8_t cmd_len)
 		spot_y = a;
 		break;
 	default:
-		Serial << "No such command: " << cmd_line << NL;
+		Serial << F("No such command: ") << cmd_line << NL;
 		return;
 	}
 	update_leds();
@@ -184,7 +200,7 @@ void setup()
 
 #ifdef MPR121_ELEC
 	if (!mpr121.begin())
-		Serial.println("Faild to find MPR121!");
+		Serial.println(F("Faild to find MPR121!"));
 
 	mpr121.writeRegister(MPR121_SOFTRESET, 0x63);
 	delay(1);
@@ -215,6 +231,21 @@ void loop()
 	if (Serial.available())
 		sc_update(Serial.read());
 
+#ifdef POT_X_PIN
+	spot_x = map(analogRead(POT_X_PIN), 0, 1023, 0, SPOT_MAX_POS);
+	spot_y = map(analogRead(POT_Y_PIN), 0, 1023, 0, SPOT_MAX_POS);
+	spot_size = -map(analogRead(POT_Z_PIN), 0, 1023, 1, SPOT_MAX_SIZE);
+	// spot_color = CHSV(spot_size * 15, 255, 255);
+	spot_color = CRGB(255, 255, 255);
+	// spot_x = LED_WIDTH / 2;
+	// spot_y = LED_HEIGHT / 2;
+	// spot_size = 6;
+	// spot_color = CHSV(255, 255, 255);
+
+	delay(10);
+	update_leds();
+#endif
+
 #ifdef MPR121_ELEC
 	uint32_t cur_ms = millis();
 	uint8_t elec_index = ELEC_INDEX_NONE;
@@ -240,10 +271,10 @@ void loop()
 		if ((elec_last_index | elec_index) != ELEC_INDEX_NONE) {
 			switch ((ELEC_COUNT + elec_index - elec_last_index) % ELEC_COUNT) {
 			case 1:
-				Serial.print("T 1" NL);
+				Serial.print(F("T 1" NL));
 				break;
 			case ELEC_COUNT - 1:
-				Serial.print("T 0" NL);
+				Serial.print(F("T 0" NL));
 				break;
 			}
 		}
@@ -253,14 +284,6 @@ void loop()
 }
 
 /*
-	#define POT_X_PIN						(A5)
-	#define POT_Y_PIN						(A6)
-	#define POT_Z_PIN						(A7)
-
-	// spot_x = map(analogRead(POT_X_PIN), 1023, 0, 0, (LED_WIDTH - 1));
-	// spot_y = map(analogRead(POT_Y_PIN), 0, 1023, 0, (LED_HEIGHT - 1));
-	// spot_size = map(analogRead(POT_Z_PIN), 0, 1023, 1, (LED_HEIGHT / 2));
-
 	diagram.json pots
     {
       "type": "wokwi-slide-potentiometer",
