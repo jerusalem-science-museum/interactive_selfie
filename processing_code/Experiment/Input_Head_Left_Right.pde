@@ -15,24 +15,33 @@ class Input_Head_Left_Right extends Input_Kinect_Head {
     }
     markedFaces = facemark.runByDetections(shrinkedCam, detections);
 
+  // yaw:
     List<KeyPointResult> kp = markedFaces.get(0).getKeyPoints();
-    float leftPx = kp.get(1).getX();
-    float rightPx = kp.get(15).getX();
-    float midPx = kp.get(30).getX();
-    float yaw = (midPx-leftPx)/(rightPx-leftPx);
-    float yawOutput = map(yaw, 0.25, 0.75, 0, 1000);
-    outputArray[filterIndex++] = (int)constrain(yawOutput, 0, 1000);
+    float leftYx = kp.get(1).getX();
+    float rightYx = kp.get(15).getX();
+    float midYx = kp.get(30).getX();
+    float faceWidth = rightYx-leftYx;
+    float yaw = (midYx-leftYx)/faceWidth;
+    
+  // roll:
+    float leftRy = kp.get(1).getY();
+    float rightRy = kp.get(15).getY();
+    float roll = (rightRy - leftRy)/faceWidth;
+    float rollOutput = map(roll, -0.15, 0.15, 0, 999);
+    outputArray[filterIndex++] = (int)constrain(rollOutput, 0, 999);
     filterIndex %= filterLength;
     output = 0;
     for (int i=0; i<filterLength; i++)
       output += outputArray[i];
     output /= filterLength;
 
+  // pitch:
     float leftPy = kp.get(0).getY();
     float rightPy = kp.get(16).getY();
     float midPy = kp.get(30).getY();
-    float pitch = (midPy-(leftPy+rightPy)/2)/(rightPx-leftPx);
+    float pitch = (midPy-(leftPy+rightPy)/2)/faceWidth;
 
+    println("roll: "+roll+"\tyaw: "+yaw+"\tpitch: "+pitch);
     logger.gestureLog(pitch, yaw, 0.0);
   }
 }

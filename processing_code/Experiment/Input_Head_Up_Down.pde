@@ -25,8 +25,8 @@ class Input_Head_Up_Down extends Input_Kinect_Head {
     float rightPy = kp.get(16).getY();
     float midPy = kp.get(30).getY();
     float pitch = (midPy-(leftPy+rightPy)/2)/(rightPx-leftPx);
-    float pitchOutput = map(pitch, 0.1, 0.35, 1000, 0);
-    outputArray[filterIndex++] = (int)constrain(pitchOutput,0,1000);
+    float pitchOutput = map(pitch, 0.1, 0.35, 999, 0);
+    outputArray[filterIndex++] = (int)constrain(pitchOutput,0,999);
     filterIndex %= filterLength;
     output = 0;
     for (int i=0; i<filterLength; i++)

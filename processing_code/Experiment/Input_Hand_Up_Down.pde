@@ -9,7 +9,7 @@ class Input_Hand_Up_Down extends Input_Kinect_Hand {
 
   @Override
     protected void setActionZone() {
-    actionZone = new Cube(new PVector(0, 0, 0.3), new PVector(0.6, 0.4, 0.8));
+    actionZone = new Cube(new PVector(0, -0.3, 0.7), new PVector(0.6, 0.2, 1.5));
   }
 
   @Override
@@ -38,8 +38,7 @@ class Input_Hand_Up_Down extends Input_Kinect_Hand {
           if ((abs(ang-HALF_PI) > 5*PI/16) && (motion.mag()>0.005)) {
             float y = actionZone.getRelativeY(hand);
             y = map (y, 0.0, 1.0, -0.1, 1.1); // giving chance to zone edges
-            y = constrain(y, 0.0, 1.0);
-            output = (int)(y*1000);
+            output = constrain((int)(y*1000), 0, 999);
           }
         }
       }

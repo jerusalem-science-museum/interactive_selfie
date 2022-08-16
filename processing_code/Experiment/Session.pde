@@ -116,7 +116,7 @@ class TSession extends GraphicsDict {
     println("Connected COM ports:");
     printArray(Serial.list());
     if (Serial.list().length > 0)
-      lightPort = new Serial(parent, Serial.list()[Serial.list().length-1], 115200);
+      lightPort = new Serial(parent, Serial.list()[Serial.list().length-1], 115200, 'N', 8, 1);
     lightPanel = new LightPanel(lightPort);
 
     input_clapping = new Input_Clapping(parent, logger, resetter);
@@ -211,6 +211,7 @@ class TSession extends GraphicsDict {
     sessionRunning = true;
     button_hebrew.show();
     button_arabic.show();
+    //button_english.show();
     state = State.INTRO_0;
     participating = true;
     selfie.reset();
@@ -245,6 +246,7 @@ class TSession extends GraphicsDict {
       activeInput.run();
       lightPanel.setColorWhite(activeInput.getOutput());
       break;
+      
     case MISSION_3_INPUT_OPTION1:
     case MISSION_3_INPUT_OPTION2:
     case MISSION_3_INPUT_OPTION3:
@@ -253,14 +255,16 @@ class TSession extends GraphicsDict {
       activeInput.run();
       lightPanel.setPower(activeInput.getOutput());
       break;
+      
     case MISSION_4_INPUT_OPTION1:
     case MISSION_4_INPUT_OPTION2:
     case MISSION_4_INPUT_OPTION3:
     case MISSION_4_INPUT_OPTION4:
     case MISSION_4_INPUT_OPTION5:
       activeInput.run();
-      lightPanel.setVertical(1000-activeInput.getOutput());
+      lightPanel.setVertical(activeInput.getOutput());
       break;
+      
     case MISSION_5_INPUT_OPTION1:
     case MISSION_5_INPUT_OPTION2:
     case MISSION_5_INPUT_OPTION3:

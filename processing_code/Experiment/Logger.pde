@@ -122,6 +122,7 @@ class Logger {
         gestureTable.addColumn("Timestamp");
         gestureTable.addColumn("Pitch");
         gestureTable.addColumn("Yaw");
+        gestureTable.addColumn("Roll");
       } else {
         gestureTable.addColumn("Timestamp");
         gestureTable.addColumn("X");
@@ -141,6 +142,7 @@ class Logger {
       if (headGesture) {
         gestureRow.setFloat("Pitch", xp);
         gestureRow.setFloat("Yaw", yy);
+        gestureRow.setFloat("Roll", zr);
       } else {
         gestureRow.setFloat("X", xp);
         gestureRow.setFloat("Y", yy);

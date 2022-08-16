@@ -1,12 +1,15 @@
 import processing.sound.*;
 
+final int CLAP_IDLE = -1;
+final int CLAP_CLAPPING = -2;  // must be < CLAP_IDLE for easier manipulation by output
+
 class Input_Clapping extends Input {
   AudioIn input;
   Amplitude loudness;
   boolean active = false;
   float prevVol = 0;
   boolean firstMeasure;
-  
+
   final float threshold = 0.1;
 
   public Input_Clapping(PApplet par, Logger log, Resetter res) {
@@ -15,11 +18,11 @@ class Input_Clapping extends Input {
     loudness = new Amplitude(parent);
     loudness.input(input);
     output = 0;
-/**/    input.start();
+    /**/    input.start();
   }
 
   public boolean begin() {
-//    input.start();
+    //    input.start();
     firstMeasure = true;
     active = true;
     output = 0;
@@ -27,20 +30,31 @@ class Input_Clapping extends Input {
   }
 
   public void end() {
-//    input.stop();
+    //    input.stop();
     active = false;
   }
 
-  public void run() {
+  // only outputs positive (999) for a single request per clapping. Outputs -1 or -2 for letting recieving module know it is momentary change
+  @Override
+    public int getOutput() {
+    if (output == CLAP_CLAPPING) {
+      resetter.resetTimer();
+      output = 0;
+      return CLAP_CLAPPING;
+    }
+    return CLAP_IDLE;
+  }
+
+  @Override
+    public void run() {
     if (active) {
       float volume = loudness.analyze();
       //println(volume);
       if (firstMeasure) {
         firstMeasure = false;
-      }
-      else {
+      } else {
         if (volume - prevVol > threshold) {
-          output = 1000 - output;
+          output = CLAP_CLAPPING;
         }
       }
       prevVol = volume;
