@@ -15,7 +15,8 @@ class TSession extends GraphicsDict {
 
   KinectPV2 kinect;
   DeepVision vision = new DeepVision(parent);
-  CascadeClassifierNetwork faceNetwork;
+  CascadeClassifierNetwork faceNetworkYawPitch;
+  ULFGFaceDetectionNetwork faceNetworkRoll;
   FacemarkLBFNetwork facemark;
   Serial lightPort;
 
@@ -90,7 +91,6 @@ class TSession extends GraphicsDict {
   Input_Hand_Left_Right input_hand_left_right;
   Input_Hand_Up_Down input_hand_up_down;
   Input_Head_Left_Right input_head_left_right;
-  //Input_Head_Up_Down input_head_up_down;
   Input_Touch input_touch;
 
   Input activeInput;
@@ -106,9 +106,11 @@ class TSession extends GraphicsDict {
 
     logger = new Logger(kinect);
 
-    faceNetwork = vision.createCascadeFrontalFace();
+    faceNetworkYawPitch = vision.createCascadeFrontalFace();
+    faceNetworkRoll = vision.createULFGFaceDetectorRFB640();
     facemark = vision.createFacemarkLBF();
-    faceNetwork.setup();
+    faceNetworkYawPitch.setup();
+    faceNetworkRoll.setup();
     facemark.setup();
 
     selfie = new Selfie(parent, kinect);
@@ -122,8 +124,7 @@ class TSession extends GraphicsDict {
     input_clapping = new Input_Clapping(parent, logger, resetter);
     input_hand_left_right = new Input_Hand_Left_Right(parent, logger, resetter, kinect);
     input_hand_up_down = new Input_Hand_Up_Down(parent, logger, resetter, kinect);
-    input_head_left_right = new Input_Head_Left_Right(parent, logger, resetter, kinect, vision, faceNetwork, facemark);
-    //input_head_up_down = new Input_Head_Up_Down(parent, logger, resetter, kinect, vision, faceNetwork, facemark);
+    input_head_left_right = new Input_Head_Left_Right(parent, logger, resetter, kinect, vision, faceNetworkYawPitch, faceNetworkRoll, facemark);
     input_touch = new Input_Touch(parent, logger, resetter, lightPort);  // change if different controller
 
     img_take_pic = loadImage("../Graphics_Common/Component_button_shoot_selected.png");
@@ -246,7 +247,7 @@ class TSession extends GraphicsDict {
       activeInput.run();
       lightPanel.setColorWhite(activeInput.getOutput());
       break;
-      
+
     case MISSION_3_INPUT_OPTION1:
     case MISSION_3_INPUT_OPTION2:
     case MISSION_3_INPUT_OPTION3:
@@ -255,7 +256,7 @@ class TSession extends GraphicsDict {
       activeInput.run();
       lightPanel.setPower(activeInput.getOutput());
       break;
-      
+
     case MISSION_4_INPUT_OPTION1:
     case MISSION_4_INPUT_OPTION2:
     case MISSION_4_INPUT_OPTION3:
@@ -264,7 +265,7 @@ class TSession extends GraphicsDict {
       activeInput.run();
       lightPanel.setVertical(activeInput.getOutput());
       break;
-      
+
     case MISSION_5_INPUT_OPTION1:
     case MISSION_5_INPUT_OPTION2:
     case MISSION_5_INPUT_OPTION3:
@@ -362,7 +363,7 @@ class TSession extends GraphicsDict {
         missionTimer = millis();
         state = State.MISSION_1_SELECT;
         /**/
-        
+
         /*        state = State.QUESTIONARE_6;   */
         /*     button_next.show();               */
       }
