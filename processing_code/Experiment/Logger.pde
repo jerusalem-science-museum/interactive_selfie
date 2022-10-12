@@ -21,7 +21,7 @@ class Logger {
     table.addColumn("Language");
     table.addColumn("Mission1_Selection");       // selected input (1-5 left to right)
     table.addColumn("Mission1_Selection_Time");  // selection time (milliseconds)
-    table.addColumn("Mission1_Input");           // final input number (1-1000)
+    table.addColumn("Mission1_Input");           // final input number (0-999)
     table.addColumn("Mission1_Input_Time");      // time until "next" was pressed
     table.addColumn("Mission2_Selection");
     table.addColumn("Mission2_Selection_Time");
@@ -40,11 +40,15 @@ class Logger {
     table.addColumn("Mission5_Input");
     table.addColumn("Mission5_Input_Time");
     table.addColumn("Selected_Selfie");
-    table.addColumn("Qestion1");                // selection (1-5 left to right)
-    table.addColumn("Qestion2");
-    table.addColumn("Qestion3");
-    table.addColumn("Qestion4");
-    table.addColumn("Qestion5");
+    table.addColumn("Summary_Color");            // selected color: 0 = white, 255 = colored
+    table.addColumn("Summary_Power");            // selected power: 50 = weakest, 255 = strongest
+    table.addColumn("Summary_Y");                // selected vertical pos: 0 = lowest, 999 = highest
+    table.addColumn("Summary_X");                // selected horizontal pos: 0 = left, 999 = right
+    table.addColumn("Qestion1 (Binary)");                // selection (1-5 left to right)
+    table.addColumn("Qestion2 (Binary)");
+    table.addColumn("Qestion3 (Binary)");
+    table.addColumn("Qestion4 (Binary)");
+    table.addColumn("Qestion5 (Binary)");
     table.addColumn("Slider1");                 // (1-1000)
     table.addColumn("Slider2");
     table.addColumn("Slider3");

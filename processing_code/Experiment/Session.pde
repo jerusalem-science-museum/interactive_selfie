@@ -37,6 +37,7 @@ class TSession extends GraphicsDict {
 
   Button button_hebrew;
   Button button_arabic;
+  Button button_english;
   Button button_next;
   Checkbox checkbox_participating;
   Checkbox checkbox_quitting;
@@ -49,7 +50,6 @@ class TSession extends GraphicsDict {
   Button button_clapping;
   Button button_head_leftright;
   Button button_hand_leftright;
-  Checkbox button_take_pic;
   Text_Input text_get_mail0;
   Text_Input text_get_mail1;
   Text_Input text_further_ideas;
@@ -119,12 +119,13 @@ class TSession extends GraphicsDict {
     printArray(Serial.list());
     if (Serial.list().length > 0)
       lightPort = new Serial(parent, Serial.list()[Serial.list().length-1], 115200, 'N', 8, 1);
-    lightPanel = new LightPanel(lightPort);
+    lightPanel = new LightPanel(lightPort, logger);
 
     input_clapping = new Input_Clapping(parent, logger, resetter);
     input_hand_left_right = new Input_Hand_Left_Right(parent, logger, resetter, kinect);
     input_hand_up_down = new Input_Hand_Up_Down(parent, logger, resetter, kinect);
     input_head_left_right = new Input_Head_Left_Right(parent, logger, resetter, kinect, vision, faceNetworkYawPitch, faceNetworkRoll, facemark);
+    input_head_left_right.run();  // need to run once for preloading models
     input_touch = new Input_Touch(parent, logger, resetter, lightPort);  // change if different controller
 
     img_take_pic = loadImage("../Graphics_Common/Component_button_shoot_selected.png");
@@ -133,8 +134,9 @@ class TSession extends GraphicsDict {
     img_radio_button_empty = loadImage("../Graphics_Common/Component_radio_unselected.png");
     img_radio_button_selected = loadImage("../Graphics_Common/Component_radio_selected.png");
 
-    button_hebrew = new Button (733, 384, 240, 240);
-    button_arabic = new Button (394, 384, 240, 240);
+    button_hebrew = new Button (902, 384, 240, 240);
+    button_arabic = new Button (563, 384, 240, 240);
+    button_english = new Button (224, 384, 240, 240);
     checkbox_participating = new Checkbox(1275, 178, img_check_box);
     checkbox_quitting = new Checkbox(1275, 271, img_check_box);
     checkbox_data_collecting = new Checkbox(1275, 323, img_check_box);
@@ -146,7 +148,6 @@ class TSession extends GraphicsDict {
     button_clapping = new Button(563, 336, 240, 240);
     button_head_leftright = new Button(308, 336, 240, 240);
     button_hand_leftright = new Button(53, 336, 240, 240);
-    button_take_pic = new Checkbox(653, 665, img_take_pic);
     slider_1 = new Slider(183-20, 469-49, img_slider_pointer);
     slider_2_4_6_8 = new Slider(183-20, 305-49, img_slider_pointer);
     slider_3_5_7_9 = new Slider(183-20, 554-49, img_slider_pointer);
@@ -167,6 +168,7 @@ class TSession extends GraphicsDict {
 
     allButtons.add(button_hebrew);
     allButtons.add(button_arabic);
+    allButtons.add(button_english);
     allButtons.add(checkbox_participating);
     allButtons.add(checkbox_quitting);
     allButtons.add(checkbox_data_collecting);
@@ -178,7 +180,6 @@ class TSession extends GraphicsDict {
     allButtons.add(button_clapping);
     allButtons.add(button_head_leftright);
     allButtons.add(button_hand_leftright);
-    allButtons.add(button_take_pic);
     allButtons.add(slider_1);
     allButtons.add(slider_2_4_6_8);
     allButtons.add(slider_3_5_7_9);
@@ -212,7 +213,7 @@ class TSession extends GraphicsDict {
     sessionRunning = true;
     button_hebrew.show();
     button_arabic.show();
-    //button_english.show();
+    button_english.show();
     state = State.INTRO_0;
     participating = true;
     selfie.reset();
@@ -236,7 +237,13 @@ class TSession extends GraphicsDict {
     case MISSION_1_INPUT_OPTION4:
     case MISSION_1_INPUT_OPTION5:
       activeInput.run();
-      lightPanel.setOnOff(activeInput.getOutput());
+      if (lightPanel.setOnOff(activeInput.getOutput())) {
+        //println("on");
+        button_next.show();
+      } else {
+        //println("off");
+        button_next.hide();
+      }
       break;
 
     case MISSION_2_INPUT_OPTION1:
@@ -300,7 +307,7 @@ class TSession extends GraphicsDict {
       break;
 
     case GOODBYE_THANKS:
-      if (millis() - globalTimer > 3000) end();
+      if (millis() - globalTimer > 5000) end();
       break;
 
     default:
@@ -317,36 +324,36 @@ class TSession extends GraphicsDict {
     switch (state) {
     case INTRO_0:
       if (button_hebrew.touched(x, y)) {
-        langFolder = "HEBREW/";
+        langFolder = "Hebrew/";
         lang = Lang.HEBREW;
         loadImages();
         state = State.INTRO_1;
         button_hebrew.hide();
         button_arabic.hide();
-        //button_english.hide();
+        button_english.hide();
         button_next.show();
       }
       if (button_arabic.touched(x, y)) {
-        langFolder = "ARABIC/";
+        langFolder = "Arabic/";
         lang = Lang.ARABIC;
         loadImages();
         state = State.INTRO_1;
         button_hebrew.hide();
         button_arabic.hide();
-        //button_english.hide();
+        button_english.hide();
         button_next.show();
       }
-      /*      if (button_english.touched(x, y)) {
-       langFolder = "ENGLISH/";
-       lang = Lang.ENGLISH;
-       loadImages();
-       state = State.INTRO_1;
-       button_hebrew.hide();
-       button_arabic.hide();
-       button_english.hide();
-       button_next.show();
-       }
-       */
+      if (button_english.touched(x, y)) {
+        langFolder = "English/";
+        lang = Lang.ENGLISH;
+        loadImages();
+        state = State.INTRO_1;
+        button_hebrew.hide();
+        button_arabic.hide();
+        button_english.hide();
+        button_next.show();
+      }
+
       break;
 
     case INTRO_1:
@@ -354,18 +361,22 @@ class TSession extends GraphicsDict {
         state = State.INTRO_2;
 
         /* integration jump to mission 1: */
-        button_hand_updown.show();
-        button_hand_around.show();
-        button_clapping.show();
-        button_head_leftright.show();
-        button_hand_leftright.show();
-        missionNum = 1;
-        missionTimer = millis();
-        state = State.MISSION_1_SELECT;
+        if (jumpToInputs) {
+          button_hand_updown.show();
+          button_hand_around.show();
+          button_clapping.show();
+          button_head_leftright.show();
+          button_hand_leftright.show();
+          missionNum = 1;
+          missionTimer = millis();
+          state = State.MISSION_1_SELECT;
+        }
+        /*
+          button_sel_question_1.show();
+         button_sel_question_2.show();
+         button_next.hide();
+         state = State.QUESTIONARE_0;
         /**/
-
-        /*        state = State.QUESTIONARE_6;   */
-        /*     button_next.show();               */
       }
       break;
 
@@ -454,43 +465,7 @@ class TSession extends GraphicsDict {
     case MISSION_4_SELECT:
     case MISSION_5_SELECT:
       if (button_hand_updown.touched(x, y)) {
-        button_next.show();
-        logger.log("Mission"+missionNum+"_Selection", 5);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION1");
-      }
-      if (button_hand_around.touched(x, y)) {
-        button_next.show();
-        logger.log("Mission"+missionNum+"_Selection", 4);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION2");
-      }
-      if (button_clapping.touched(x, y)) {
-        button_next.show();
-        logger.log("Mission"+missionNum+"_Selection", 3);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION3");
-      }
-      if (button_head_leftright.touched(x, y)) {
-        button_next.show();
-        logger.log("Mission"+missionNum+"_Selection", 2);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION4");
-      }
-      if (button_hand_leftright.touched(x, y)) {
-        button_next.show();
-        logger.log("Mission"+missionNum+"_Selection", 1);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION5");
-      }
-      break;
-
-    case MISSION_1_SELECT_OPTION1:
-    case MISSION_2_SELECT_OPTION1:
-    case MISSION_3_SELECT_OPTION1:
-    case MISSION_4_SELECT_OPTION1:
-    case MISSION_5_SELECT_OPTION1:
-      if (button_next.touched(x, y)) {
+        if (missionNum>1) button_next.show();
         button_hand_updown.hide();
         button_hand_around.hide();
         button_clapping.hide();
@@ -498,38 +473,14 @@ class TSession extends GraphicsDict {
         button_hand_leftright.hide();
         activeInput = input_hand_up_down;
         input_hand_up_down.begin();
+        logger.log("Mission"+missionNum+"_Selection", 5);
+        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
         logger.startGestureRecord("Mission"+missionNum+"_Hand_UpDown", false);
         missionTimer = millis();
         state = State.valueOf("MISSION_"+missionNum+"_INPUT_OPTION1");
       }
       if (button_hand_around.touched(x, y)) {
-        logger.log("Mission"+missionNum+"_Selection", 4);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION2");
-      }
-      if (button_clapping.touched(x, y)) {
-        logger.log("Mission"+missionNum+"_Selection", 3);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION3");
-      }
-      if (button_head_leftright.touched(x, y)) {
-        logger.log("Mission"+missionNum+"_Selection", 2);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION4");
-      }
-      if (button_hand_leftright.touched(x, y)) {
-        logger.log("Mission"+missionNum+"_Selection", 1);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION5");
-      }
-      break;
-
-    case MISSION_1_SELECT_OPTION2:
-    case MISSION_2_SELECT_OPTION2:
-    case MISSION_3_SELECT_OPTION2:
-    case MISSION_4_SELECT_OPTION2:
-    case MISSION_5_SELECT_OPTION2:
-      if (button_next.touched(x, y)) {
+        if (missionNum>1) button_next.show();
         button_hand_updown.hide();
         button_hand_around.hide();
         button_clapping.hide();
@@ -537,37 +488,13 @@ class TSession extends GraphicsDict {
         button_hand_leftright.hide();
         activeInput=input_touch;
         input_touch.begin();
+        logger.log("Mission"+missionNum+"_Selection", 4);
+        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
         missionTimer = millis();
         state = State.valueOf("MISSION_"+missionNum+"_INPUT_OPTION2");
       }
-      if (button_hand_updown.touched(x, y)) {
-        logger.log("Mission"+missionNum+"_Selection", 5);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION1");
-      }
       if (button_clapping.touched(x, y)) {
-        logger.log("Mission"+missionNum+"_Selection", 3);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION3");
-      }
-      if (button_head_leftright.touched(x, y)) {
-        logger.log("Mission"+missionNum+"_Selection", 2);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION4");
-      }
-      if (button_hand_leftright.touched(x, y)) {
-        logger.log("Mission"+missionNum+"_Selection", 1);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION5");
-      }
-      break;
-
-    case MISSION_1_SELECT_OPTION3:
-    case MISSION_2_SELECT_OPTION3:
-    case MISSION_3_SELECT_OPTION3:
-    case MISSION_4_SELECT_OPTION3:
-    case MISSION_5_SELECT_OPTION3:
-      if (button_next.touched(x, y)) {
+        if (missionNum>1) button_next.show();
         button_hand_updown.hide();
         button_hand_around.hide();
         button_clapping.hide();
@@ -575,37 +502,13 @@ class TSession extends GraphicsDict {
         button_hand_leftright.hide();
         activeInput = input_clapping;
         input_clapping.begin();
+        logger.log("Mission"+missionNum+"_Selection", 3);
+        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
         missionTimer = millis();
         state = State.valueOf("MISSION_"+missionNum+"_INPUT_OPTION3");
       }
-      if (button_hand_updown.touched(x, y)) {
-        logger.log("Mission"+missionNum+"_Selection", 5);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION1");
-      }
-      if (button_hand_around.touched(x, y)) {
-        logger.log("Mission"+missionNum+"_Selection", 4);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION2");
-      }
       if (button_head_leftright.touched(x, y)) {
-        logger.log("Mission"+missionNum+"_Selection", 2);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION4");
-      }
-      if (button_hand_leftright.touched(x, y)) {
-        logger.log("Mission"+missionNum+"_Selection", 1);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION5");
-      }
-      break;
-
-    case MISSION_1_SELECT_OPTION4:
-    case MISSION_2_SELECT_OPTION4:
-    case MISSION_3_SELECT_OPTION4:
-    case MISSION_4_SELECT_OPTION4:
-    case MISSION_5_SELECT_OPTION4:
-      if (button_next.touched(x, y)) {
+        if (missionNum>1) button_next.show();
         button_hand_updown.hide();
         button_hand_around.hide();
         button_clapping.hide();
@@ -613,38 +516,14 @@ class TSession extends GraphicsDict {
         button_hand_leftright.hide();
         activeInput = input_head_left_right;
         input_head_left_right.begin();
+        logger.log("Mission"+missionNum+"_Selection", 2);
+        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
         logger.startGestureRecord("Mission"+missionNum+"_Head_LeftRight", true);
         missionTimer = millis();
         state = State.valueOf("MISSION_"+missionNum+"_INPUT_OPTION4");
       }
-      if (button_hand_updown.touched(x, y)) {
-        logger.log("Mission"+missionNum+"_Selection", 5);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION1");
-      }
-      if (button_hand_around.touched(x, y)) {
-        logger.log("Mission"+missionNum+"_Selection", 4);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION2");
-      }
-      if (button_clapping.touched(x, y)) {
-        logger.log("Mission"+missionNum+"_Selection", 3);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION3");
-      }
       if (button_hand_leftright.touched(x, y)) {
-        logger.log("Mission"+missionNum+"_Selection", 1);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION5");
-      }
-      break;
-
-    case MISSION_1_SELECT_OPTION5:
-    case MISSION_2_SELECT_OPTION5:
-    case MISSION_3_SELECT_OPTION5:
-    case MISSION_4_SELECT_OPTION5:
-    case MISSION_5_SELECT_OPTION5:
-      if (button_next.touched(x, y)) {
+        if (missionNum>1) button_next.show();
         button_hand_updown.hide();
         button_hand_around.hide();
         button_clapping.hide();
@@ -652,29 +531,11 @@ class TSession extends GraphicsDict {
         button_hand_leftright.hide();
         activeInput = input_hand_left_right;
         input_hand_left_right.begin();
+        logger.log("Mission"+missionNum+"_Selection", 1);
+        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
         logger.startGestureRecord("Mission"+missionNum+"_Hand_LeftRight", false);
         missionTimer = millis();
         state = State.valueOf("MISSION_"+missionNum+"_INPUT_OPTION5");
-      }
-      if (button_hand_updown.touched(x, y)) {
-        logger.log("Mission"+missionNum+"_Selection", 5);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION1");
-      }
-      if (button_hand_around.touched(x, y)) {
-        logger.log("Mission"+missionNum+"_Selection", 4);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION2");
-      }
-      if (button_clapping.touched(x, y)) {
-        logger.log("Mission"+missionNum+"_Selection", 3);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION3");
-      }
-      if (button_head_leftright.touched(x, y)) {
-        logger.log("Mission"+missionNum+"_Selection", 2);
-        logger.log("Mission"+missionNum+"_Selection_Time", millis()-missionTimer);
-        state = State.valueOf("MISSION_"+missionNum+"_SELECT_OPTION4");
       }
       break;
 
@@ -710,8 +571,8 @@ class TSession extends GraphicsDict {
         logger.log("Mission"+missionNum+"_Input_Time", millis()-missionTimer);
         button_next.hide();
         selfie.begin();
-        button_take_pic.show();
         state = State.valueOf("MISSION_"+missionNum+"_SELFIE");
+        globalFlag = 0;  // used in next step for checking if retaking selfie
       }
       break;
 
@@ -720,19 +581,6 @@ class TSession extends GraphicsDict {
     case MISSION_3_SELFIE:
     case MISSION_4_SELFIE:
     case MISSION_5_SELFIE:
-      if (button_take_pic.touched(x, y)) {
-        selfie.takePic();
-        state = State.valueOf("MISSION_"+missionNum+"_SAVE_SELFIE");
-        button_next.show();
-        button_take_pic.hide();
-      }
-      break;
-
-    case MISSION_1_SAVE_SELFIE:
-    case MISSION_2_SAVE_SELFIE:
-    case MISSION_3_SAVE_SELFIE:
-    case MISSION_4_SAVE_SELFIE:
-    case MISSION_5_SAVE_SELFIE:
       if (button_next.touched(x, y)) {
         button_next.hide();
         missionNum++;
@@ -745,7 +593,16 @@ class TSession extends GraphicsDict {
           button_hand_leftright.show();
           state = State.valueOf("MISSION_"+missionNum+"_SELECT");
         } else {
+          lightPanel.logSummary();
           state = State.SHOW_SELECT_ALL_SELFIES;
+        }
+      } else { // touch anywhere else - take picture again
+        if (globalFlag == 0) {  // first time taking the picture - freeze it
+          selfie.takePic();
+          button_next.show();
+          globalFlag = 1;
+        } else {
+          selfie.takePicAgain();
         }
       }
       break;
@@ -786,7 +643,8 @@ class TSession extends GraphicsDict {
           // add participant to museum mailbox
         }
         checkbox_museum_publications.hide();
-        selfie.sendSelectedPic(text_get_mail0.getText()+"@"+text_get_mail1.getText());
+        selfie.setMailAddress(text_get_mail0.getText()+"@"+text_get_mail1.getText());
+        selfie.start();
         if (participating) {
           button_sel_question_1.show();
           button_sel_question_2.show();
@@ -807,8 +665,8 @@ class TSession extends GraphicsDict {
         button_next.show();
       }
       if (button_next.touched(x, y)) {
-        logger.log("Qestion1", button_sel_question_1.getSelected()+1);
-        logger.log("Qestion2", button_sel_question_2.getSelected()+1);
+        logger.log("Qestion1 (Binary)", button_sel_question_1.getSelected());
+        logger.log("Qestion2 (Binary)", button_sel_question_2.getSelected());
         button_sel_question_1.hide();
         button_sel_question_2.hide();
         button_sel_question_3.show();
@@ -827,9 +685,9 @@ class TSession extends GraphicsDict {
         button_next.show();
       }
       if (button_next.touched(x, y)) {
-        logger.log("Qestion3", button_sel_question_3.getSelected()+1);
-        logger.log("Qestion4", button_sel_question_4.getSelected()+1);
-        logger.log("Qestion5", button_sel_question_5.getSelected()+1);
+        logger.log("Qestion3 (Binary)", button_sel_question_3.getSelected());
+        logger.log("Qestion4 (Binary)", button_sel_question_4.getSelected());
+        logger.log("Qestion5 (Binary)", button_sel_question_5.getSelected());
         button_sel_question_3.hide();
         button_sel_question_4.hide();
         button_sel_question_5.hide();
@@ -1035,6 +893,7 @@ class TSession extends GraphicsDict {
 
   private void loadImages() {
     // loading buttons with words
+    println("Loading Buttons");
     button_next = new Button(50, 657, graphicsFolder + langFolder +"Component_button_continue_default.png");
     img_qst_option_1 = loadImage(graphicsFolder + langFolder + "Component_button_option1_selected_small.png");
     img_qst_option_2 = loadImage(graphicsFolder + langFolder + "Component_button_option2_selected_small.png");
@@ -1055,11 +914,13 @@ class TSession extends GraphicsDict {
     allButtons.add(button_sel_question_4);
     allButtons.add(button_sel_question_5);
 
+    println("Laoding Screens");
     // loading all slides asynchronuously
     for (State st : State.values()) {
       images.put (st, requestImage(graphicsFolder + langFolder + graphicFileName.get(st)));
     }
     delay(100); // for making sure first images are loaded in time
+    println("Screens Loaded");
   }
 
   public void keyPressed(char key) {
@@ -1093,6 +954,10 @@ class TSession extends GraphicsDict {
 
   public void dragged(int mx) {
     for (Slider s : allSliders) s.dragged(mx);
+  }
+
+  public void stop() {
+    lightPanel.stop();
   }
 }
 

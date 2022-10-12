@@ -1,5 +1,5 @@
 class Button_Select extends Button {
-  int selected = -1;
+  int selected = 0;
   Checkbox btns[];
 
   public Button_Select(int by, PImage[] images) {
@@ -10,7 +10,7 @@ class Button_Select extends Button {
 
   @Override
     public void show() {
-    selected = -1;
+    selected = 0;  //-1
     active = true;
     for (int i=0; i<5; i++) btns[i].show();
   }
@@ -33,9 +33,11 @@ class Button_Select extends Button {
     if (active) {
       for (int i=0; i<5; i++) {
         if (btns[i].touched(mx, my)) {
-          selected = i;
-          for (int j=0; j<5; j++) btns[j].off();
-          btns[i].on();
+          print("selected: "+selected);
+          selected ^= 1<<i;
+          println("\ti: "+i+"\tselected: "+selected);
+          //for (int j=0; j<5; j++) btns[j].off();
+          //btns[i].on();
           return true;
         }
       }
@@ -44,7 +46,7 @@ class Button_Select extends Button {
   }
 
   public boolean getState() {
-    return (selected > -1);
+    return (selected > 0);  // > -1);
   }
   
   public int getSelected() {

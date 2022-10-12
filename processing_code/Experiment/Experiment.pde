@@ -1,5 +1,7 @@
 import java.util.*;
 
+boolean jumpToInputs = false;  // for other specific jump - update at "Session.pde" line ~370, and dont forget to show q hide relevant buttons/controls
+
 /* 
 Needed libraries:
   Kinect v2 for Processing
@@ -21,10 +23,10 @@ On the language settings of Win, set shortcuts for:
 
 TSession session;
 Resetter resetter;
-
+ 
 void setup() {
-  fullScreen();
-  //size(1366, 800);  // for testing on systems with better screens
+  //fullScreen();
+  size(1366, 800);  // for testing on systems with better screens
   frameRate(30);  // for loggers to not write too much
   resetter = new Resetter();
 
@@ -60,4 +62,8 @@ void keyPressed() {
   //if (key==ESC) key = 0;  // REMOVE BEFORE FLIGHT ...
   //else
   session.keyPressed(key);
+}
+
+void stop() {
+  session.stop();
 }

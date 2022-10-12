@@ -8,8 +8,8 @@ class Input_Head_Left_Right extends Input_Kinect_Head {
 
   @Override
     public void run() {
-      float yaw = 0, roll = 0, pitch = 0;
-      
+    float yaw = 0, roll = 0, pitch = 0;
+int t = millis();
     shrinkedCam.copy(kinect.getColorImage(), 0, 0, 1920, 1080, 0, 0, 1920/shrinkRatio, 1080/shrinkRatio);
     detections = faceNetworkYawPitch.run(shrinkedCam);
     if (detections.size() > 0) {

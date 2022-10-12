@@ -16,6 +16,7 @@ final boolean LightPanelDebug = false;
 
 class LightPanel {
   Serial lightPort;
+  Logger logger;
   color col;
   color targetCol;
   int x, y;
@@ -25,8 +26,9 @@ class LightPanel {
   int rateTimer;
   int vertClapDir, horClapDir;
 
-  public LightPanel(Serial port) {
+  public LightPanel(Serial port, Logger log) {
     lightPort = port;
+    logger = log;
     resetTimer = millis();
   }
 
@@ -71,20 +73,27 @@ class LightPanel {
     }
   }
 
-  public void setOnOff(int i) {
+  public boolean setOnOff(int i) {
+    boolean on = false;
     if (i <= CLAP_IDLE) {  // clapping - switch between on/off
       if (i == CLAP_CLAPPING) {
-        if (targetCol == color(0)) targetCol = initColor;
-        else targetCol = color(0);
+        if (targetCol == color(0)) on= true;
+      } else {
+        on = (targetCol == initColor);
       }
     } else if (i >= TOUCH_IDLE) {  // touching - switch by direction
-      if (i == TOUCH_RIGHT) targetCol = initColor;
-      else if (i == TOUCH_LEFT) targetCol = color(0);
-    } else if (i<500) {
-      targetCol = color(0);
-    } else {
-      targetCol = initColor;
+      if (i == TOUCH_RIGHT) on = true;
+      else if (i == TOUCH_IDLE) on = (targetCol == initColor);
+    } else if (i>500) {
+      on = true;
     }
+
+    if (on) {
+      targetCol = initColor;
+    } else {
+      targetCol = color(0);
+    }
+    return on;
   }
 
   public void setColorWhite(int i) {
@@ -99,8 +108,7 @@ class LightPanel {
         float sat = green(col) - colorWhiteTouchJumpVal;
         if (sat < 0) sat = 0;
         targetCol = color(red(col), sat, blue(col));
-      }
-      else if (i == TOUCH_LEFT) {
+      } else if (i == TOUCH_LEFT) {
         float sat = green(col) + colorWhiteTouchJumpVal;
         if (sat > 255) sat = 255;
         targetCol = color(red(col), sat, blue(col));
@@ -122,8 +130,7 @@ class LightPanel {
         float pow = blue(col) + powerTouchJumpVal;
         if (pow > 255) pow = 255;
         targetCol = color(red(col), green(col), pow);
-      }
-      else if (i == TOUCH_LEFT) {
+      } else if (i == TOUCH_LEFT) {
         float pow = blue(col) - powerTouchJumpVal;
         if (pow < 50) pow = 50;
         targetCol = color(red(col), green(col), pow);
@@ -148,8 +155,7 @@ class LightPanel {
     } else if (i >= TOUCH_IDLE) {  // touching - switch by direction
       if (i == TOUCH_RIGHT) {
         targetY = constrain(y + verticalTouchJumpVal, 0, 999);
-      }
-      else if (i == TOUCH_LEFT) {
+      } else if (i == TOUCH_LEFT) {
         targetY = constrain(y - verticalTouchJumpVal, 0, 999);
       }
     } else {
@@ -172,8 +178,7 @@ class LightPanel {
     } else if (i >= TOUCH_IDLE) {  // touching - switch by direction
       if (i == TOUCH_RIGHT) {
         targetX = constrain(x + horizontalTouchJumpVal, 0, 999);
-      }
-      else if (i == TOUCH_LEFT) {
+      } else if (i == TOUCH_LEFT) {
         targetX = constrain(x - horizontalTouchJumpVal, 0, 999);
       }
     } else {
@@ -188,5 +193,17 @@ class LightPanel {
       print("NO COMM TO LIGHTPANEL! ");
     }
     if (LightPanelDebug) println("LightPanel cmd: " + cmd);
+  }
+
+  public void logSummary() {
+    logger.log("Summary_Color", (int)green(col));
+    logger.log("Summary_Power", (int)blue(col));
+    logger.log("Summary_Y", y);
+    logger.log("Summary_X", x);
+  }
+  
+  public void stop() {
+    println("Turning light off...");
+    write("C 0 0 0\n");
   }
 }

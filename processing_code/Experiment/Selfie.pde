@@ -1,7 +1,7 @@
 import myselfie.emailer.SendMail;
 import org.apache.commons.validator.routines.EmailValidator;
 
-class Selfie {
+class Selfie extends Thread {
   PApplet parent;
   KinectPV2 kinect;
   int currentPic;
@@ -10,9 +10,10 @@ class Selfie {
   PImage croppedPic;
   PImage pictures[];
   int selected;
-  PImage frame360;
+  PImage frame382;
   PImage frame284;
   PImage frame240;
+  String mailAddress;
   SendMail sendMail;
 
   final String imgFileName = "selfie.jpg";
@@ -30,7 +31,7 @@ class Selfie {
   }
 
   void loadFrames() {
-    frame360 = loadImage("../Graphics_Common/Selfie frame - regular.png");
+    frame382 = loadImage("../Graphics_Common/Selfie frame - regular.png");
     frame284 = loadImage("../Graphics_Common/Selfie frame - screen 0030.png");
     frame240 = loadImage("../Graphics_Common/Selfie frame - screen 0029.png");
   }
@@ -43,6 +44,12 @@ class Selfie {
     pictures[currentPic++].copy(croppedPic, 0, 0, 720, 720, 0, 0, 720, 720);
   }
 
+  public void takePicAgain() {
+    currentPic--;
+    show();
+    takePic();
+  }
+  
   public void reset() {
     currentPic = 0;
     takingPic = -1;
@@ -53,8 +60,8 @@ class Selfie {
     if (currentPic == takingPic) {
       croppedPic.copy(kinect.getColorImage(), 600, 180, 720, 720, 0, 0, 720, 720);
     }
-    image(croppedPic, 503, 283, 360, 360);
-    image(frame360, 503, 283);
+    image(croppedPic, 492, 317, 382, 382);
+    image(frame382, 492, 317);
   }
 
   public void showAll() {
@@ -77,20 +84,24 @@ class Selfie {
     croppedPic.save(imgFileName);
   }
 
-  public void sendSelectedPic(String target) {
-    if (!EmailValidator.getInstance().isValid(target)) {
-      println("Illegal email address: " + target);
+  public void setMailAddress(String target) {
+    mailAddress = target;
+  }
+  
+  public void run() {
+    if (!EmailValidator.getInstance().isValid(mailAddress)) {
+      println("Illegal email address: " + mailAddress);
       return;
     }
 
     try {
-      sendMail.send(target);
+      sendMail.send(mailAddress);
     }
     catch (NoSuchMethodError er) {
       println(er.toString());
     }
     catch (Exception ex) {
-      println("Error sending mail to "+target);
+      println("Error sending mail to "+mailAddress);
       println(ex.toString());
     }
   }
