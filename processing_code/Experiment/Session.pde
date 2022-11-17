@@ -141,7 +141,7 @@ class TSession extends GraphicsDict {
     checkbox_quitting = new Checkbox(1275, 271, img_check_box);
     checkbox_data_collecting = new Checkbox(1275, 323, img_check_box);
     checkbox_age_18 = new Checkbox(1275, 375, img_check_box);
-    checkbox_experiencing = new Checkbox(1275, 620, img_check_box);
+    checkbox_experiencing = new Checkbox(1275, 605, img_check_box);
     checkbox_museum_publications = new Checkbox(644, 401, img_check_box);
     button_hand_updown = new Button(1073, 336, 240, 240);
     button_hand_around = new Button(818, 336, 240, 240);
@@ -380,13 +380,13 @@ class TSession extends GraphicsDict {
       }
       break;
 
-    case INTRO_2:
+/*    case INTRO_2:
       if (button_next.touched(x, y)) {
         state = State.INTRO_3;
       }
-      break;
+      break;*/
 
-    case INTRO_3:
+    case INTRO_2:  // INTRO_3:
       if (button_next.touched(x, y)) {
         if (lang == Lang.ENGLISH) {
           participating = false;
@@ -643,16 +643,15 @@ class TSession extends GraphicsDict {
           // add participant to museum mailbox
         }
         checkbox_museum_publications.hide();
+        button_next.hide();
         selfie.setMailAddress(text_get_mail0.getText()+"@"+text_get_mail1.getText());
         selfie.start();
         if (participating) {
           button_sel_question_1.show();
           button_sel_question_2.show();
-          button_next.hide();
           state = State.QUESTIONARE_0;
         } else {
           globalTimer = millis();
-          button_next.hide();
           state = State.GOODBYE_THANKS;
         }
       }
@@ -971,7 +970,7 @@ enum State {
   INTRO_0,
     INTRO_1,
     INTRO_2,
-    INTRO_3,
+//    INTRO_3,
     APPROVAL,
     MISSION_1_SELECT,
     MISSION_1_SELECT_OPTION1,

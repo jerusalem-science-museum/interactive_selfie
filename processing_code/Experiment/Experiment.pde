@@ -25,8 +25,8 @@ TSession session;
 Resetter resetter;
  
 void setup() {
-  //fullScreen();
-  size(1366, 800);  // for testing on systems with better screens
+  fullScreen();
+  //size(1366, 800);  // for testing on systems with better screens
   frameRate(30);  // for loggers to not write too much
   resetter = new Resetter();
 

@@ -5,7 +5,7 @@ class GraphicsDict {
     graphicFileName.put(State.INTRO_0, "0000_screen_language.png");
     graphicFileName.put(State.INTRO_1, "0001_screen_opening.png");
     graphicFileName.put(State.INTRO_2, "0002_screen_explanation1.png");
-    graphicFileName.put(State.INTRO_3, "0002A_screen_explanation2.png");
+//    graphicFileName.put(State.INTRO_3, "0002A_screen_explanation2.png");
     graphicFileName.put(State.APPROVAL, "0003_screen_TermsConditions.png");
 
     graphicFileName.put(State.MISSION_1_SELECT, "0004_screen_Mission1_Main.png");
