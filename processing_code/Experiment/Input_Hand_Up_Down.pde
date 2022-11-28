@@ -9,7 +9,7 @@ class Input_Hand_Up_Down extends Input_Kinect_Hand {
 
   @Override
     protected void setActionZone() {
-    actionZone = new Cube(new PVector(0, -0.3, 0.7), new PVector(0.6, 0.2, 1.5));
+    actionZone = new Cube(new PVector(-0.1, -0.2, 0.5), new PVector(0.5, 0.2, 1.5));
   }
 
   @Override
@@ -28,14 +28,13 @@ class Input_Hand_Up_Down extends Input_Kinect_Hand {
     if (joints[KinectPV2.JointType_HandRight].getState() != KinectPV2.HandState_NotTracked) {
       PVector hand = getRotatedJointPos(joints[KinectPV2.JointType_HandRight].getPosition());
       logger.gestureLog(hand.x, hand.y, hand.z);
-      //println(hand);
       if (actionZone.inside(hand)) {
         if ((hand.x!=prevPos.x) || (hand.y!=prevPos.y) || (hand.z!=prevPos.z)) {
           PVector motion = PVector.sub(hand, prevPos);
           prevPos.set(hand);
           float ang = PVector.angleBetween(motion, motionVector);
           //println(ang, motion, motion.mag());
-          if ((abs(ang-HALF_PI) > 5*PI/16) && (motion.mag()>0.005)) {
+          if ((abs(ang-HALF_PI) > 6*PI/16) && (motion.mag()>0.005)) {
             float y = actionZone.getRelativeY(hand);
             y = map (y, 0.0, 1.0, -0.1, 1.1); // giving chance to zone edges
             output = constrain((int)(y*1000), 0, 999);

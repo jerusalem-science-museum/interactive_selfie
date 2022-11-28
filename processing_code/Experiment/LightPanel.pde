@@ -1,6 +1,6 @@
 final color initColor = color(100, 255, 50);  // This is in HSB, but the rest of the sketch uses RGB, so we emulate it
-final int initX = 0;
-final int initY = 999;
+final int initX = 220;
+final int initY = 0;
 final int resetTime = 5000;
 final int minDelayBetCmds = 100;
 final int colorWhiteClapJumpVal = 50;
@@ -11,6 +11,7 @@ final int verticalClapJumpVal = 200;
 final int verticalTouchJumpVal = 50;
 final int horizontalClapJumpVal = 56;
 final int horizontalTouchJumpVal = 12;
+final int maxPower = 100;
 
 final boolean LightPanelDebug = false;
 
@@ -122,13 +123,13 @@ class LightPanel {
     if (i <= CLAP_IDLE) {  // clapping - rotate netween values
       if (i == CLAP_CLAPPING) {
         float pow = blue(col) + powerClapJumpVal;
-        if (pow > 255) pow = 50;
+        if (pow > maxPower) pow = 50;
         targetCol = color(red(col), green(col), pow);
       }
     } else if (i >= TOUCH_IDLE) {  // touching - switch by direction
       if (i == TOUCH_RIGHT) {
         float pow = blue(col) + powerTouchJumpVal;
-        if (pow > 255) pow = 255;
+        if (pow > maxPower) pow = maxPower;
         targetCol = color(red(col), green(col), pow);
       } else if (i == TOUCH_LEFT) {
         float pow = blue(col) - powerTouchJumpVal;
@@ -136,7 +137,7 @@ class LightPanel {
         targetCol = color(red(col), green(col), pow);
       }
     } else {
-      targetCol = color(red(col), green(col), constrain(256*i/1000, 50, 255));  // raise brightness
+      targetCol = color(red(col), green(col), constrain(maxPower*i/1000, 50, maxPower));  // raise brightness
     }
   }
 
@@ -154,9 +155,9 @@ class LightPanel {
       }
     } else if (i >= TOUCH_IDLE) {  // touching - switch by direction
       if (i == TOUCH_RIGHT) {
-        targetY = constrain(y + verticalTouchJumpVal, 0, 999);
-      } else if (i == TOUCH_LEFT) {
         targetY = constrain(y - verticalTouchJumpVal, 0, 999);
+      } else if (i == TOUCH_LEFT) {
+        targetY = constrain(y + verticalTouchJumpVal, 0, 999);
       }
     } else {
       targetY = 999 - i;
@@ -196,7 +197,7 @@ class LightPanel {
   }
 
   public void logSummary() {
-    logger.log("Summary_Color", (int)green(col));
+    logger.log("Summary_Color", 255 - (int)green(col));
     logger.log("Summary_Power", (int)blue(col));
     logger.log("Summary_Y", y);
     logger.log("Summary_X", x);

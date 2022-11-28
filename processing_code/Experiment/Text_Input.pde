@@ -366,12 +366,16 @@ static class Text_Input {
       input.close();
       if (!foundOsk) {
         setLang(ln);
-        robot.keyPress(java.awt.event.KeyEvent.VK_WINDOWS);
-        robot.keyPress(java.awt.event.KeyEvent.VK_CONTROL);
-        robot.keyPress(java.awt.event.KeyEvent.VK_O);
-        robot.keyRelease(java.awt.event.KeyEvent.VK_O);
-        robot.keyRelease(java.awt.event.KeyEvent.VK_WINDOWS);
-        robot.keyRelease(java.awt.event.KeyEvent.VK_CONTROL);
+        robot.keyPress(java.awt.event.KeyEvent.VK_ALT);
+        robot.keyPress(java.awt.event.KeyEvent.VK_K);
+        robot.keyRelease(java.awt.event.KeyEvent.VK_K);
+        robot.keyRelease(java.awt.event.KeyEvent.VK_ALT);
+        //robot.keyPress(java.awt.event.KeyEvent.VK_WINDOWS);
+        //robot.keyPress(java.awt.event.KeyEvent.VK_CONTROL);
+        //robot.keyPress(java.awt.event.KeyEvent.VK_O);
+        //robot.keyRelease(java.awt.event.KeyEvent.VK_O);
+        //robot.keyRelease(java.awt.event.KeyEvent.VK_WINDOWS);
+        //robot.keyRelease(java.awt.event.KeyEvent.VK_CONTROL);
       }
     }
     catch (Exception err) {
@@ -388,16 +392,20 @@ static class Text_Input {
         new BufferedReader(new InputStreamReader(p.getInputStream()));
       while ((line = input.readLine()) != null) {
         if (line.startsWith("osk.exe")) foundOsk = true;
-        //        println(line); //<-- Parse data here.
+                println(line); //<-- Parse data here.
       }
       input.close();
       if (foundOsk) {
-        robot.keyPress(java.awt.event.KeyEvent.VK_WINDOWS);
-        robot.keyPress(java.awt.event.KeyEvent.VK_CONTROL);
-        robot.keyPress(java.awt.event.KeyEvent.VK_O);
-        robot.keyRelease(java.awt.event.KeyEvent.VK_O);
-        robot.keyRelease(java.awt.event.KeyEvent.VK_WINDOWS);
-        robot.keyRelease(java.awt.event.KeyEvent.VK_CONTROL);
+        robot.keyPress(java.awt.event.KeyEvent.VK_ALT);
+        robot.keyPress(java.awt.event.KeyEvent.VK_K);
+        robot.keyRelease(java.awt.event.KeyEvent.VK_K);
+        robot.keyRelease(java.awt.event.KeyEvent.VK_ALT);
+        //robot.keyPress(java.awt.event.KeyEvent.VK_WINDOWS);
+        //robot.keyPress(java.awt.event.KeyEvent.VK_CONTROL);
+        //robot.keyPress(java.awt.event.KeyEvent.VK_O);
+        //robot.keyRelease(java.awt.event.KeyEvent.VK_O);
+        //robot.keyRelease(java.awt.event.KeyEvent.VK_WINDOWS);
+        //robot.keyRelease(java.awt.event.KeyEvent.VK_CONTROL);
       }
     }
     catch (Exception err) {

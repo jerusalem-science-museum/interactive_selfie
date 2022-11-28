@@ -9,7 +9,7 @@ class Input_Hand_Left_Right extends Input_Kinect_Hand {
 
   @Override
     protected void setActionZone() {
-    actionZone = new Cube(new PVector(0.0, -0.2, 0.5), new PVector(0.3, 0.1, 1.6));
+    actionZone = new Cube(new PVector(-0.2, -0.25, 0.5), new PVector(0.3, 0.2, 1.5));
   }
 
   @Override

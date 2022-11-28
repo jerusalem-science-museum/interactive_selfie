@@ -40,7 +40,7 @@ class Logger {
     table.addColumn("Mission5_Input");
     table.addColumn("Mission5_Input_Time");
     table.addColumn("Selected_Selfie");
-    table.addColumn("Summary_Color");            // selected color: 0 = white, 255 = colored
+    table.addColumn("Summary_Color");            // selected color: 0 = colored, 255 = white
     table.addColumn("Summary_Power");            // selected power: 50 = weakest, 255 = strongest
     table.addColumn("Summary_Y");                // selected vertical pos: 0 = lowest, 999 = highest
     table.addColumn("Summary_X");                // selected horizontal pos: 0 = left, 999 = right

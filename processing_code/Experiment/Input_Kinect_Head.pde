@@ -9,6 +9,10 @@ class Input_Kinect_Head extends Input {
   FacemarkLBFNetwork facemark;
   PImage shrinkedCam;
   final int shrinkRatio = 2;
+  final int sourceX = 640;
+  final int sourceY = 0;
+  final int sourceW = 640;
+  final int sourceH = 1080;
   int filterLength;
   int outputArray[];
   int filterIndex=0;
@@ -20,7 +24,7 @@ class Input_Kinect_Head extends Input {
     faceNetworkYawPitch = faceNetYP;
     faceNetworkRoll = faceNetR;
     facemark = facem;
-    shrinkedCam = createImage(1920/shrinkRatio, 1080/shrinkRatio, RGB);
+    shrinkedCam = createImage(sourceW/shrinkRatio, sourceH/shrinkRatio, RGB);
   }
   
   public boolean begin() {

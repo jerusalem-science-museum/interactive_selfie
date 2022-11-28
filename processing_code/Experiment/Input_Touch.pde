@@ -1,4 +1,4 @@
-final int touchInputIncrements = 10;
+final int touchInputIncrements = 30;
 final int TOUCH_IDLE = 2000;
 final int TOUCH_LEFT = 2001;  // these are > TOUCH_IDLE for simpler manipulation
 final int TOUCH_RIGHT = 2002;
@@ -12,7 +12,7 @@ class Input_Touch extends Input {
   }
 
   public boolean begin() {
-    output = 0;
+    output = TOUCH_IDLE;
     if (touchPort == null) {
       return false;
     } else {

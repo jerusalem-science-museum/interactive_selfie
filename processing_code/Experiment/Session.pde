@@ -1,9 +1,11 @@
-import KinectPV2.KJoint;
+import KinectPV2.KJoint; //<>//
 import KinectPV2.*;
 import ch.bildspur.vision.*;
 import ch.bildspur.vision.result.*;
 import java.util.List;
 import processing.serial.*;
+
+final int max_time_for_calibration = 20000;  // max time until system declares "there is no spoon"
 
 
 class TSession extends GraphicsDict {
@@ -39,11 +41,13 @@ class TSession extends GraphicsDict {
   Button button_arabic;
   Button button_english;
   Button button_next;
+  Button button_restart;
+  Button button_participating;
+  Button button_experiencing;
   Checkbox checkbox_participating;
   Checkbox checkbox_quitting;
   Checkbox checkbox_data_collecting;
   Checkbox checkbox_age_18;
-  Checkbox checkbox_experiencing;
   Checkbox checkbox_museum_publications;
   Button button_hand_updown;
   Button button_hand_around;
@@ -137,11 +141,13 @@ class TSession extends GraphicsDict {
     button_hebrew = new Button (902, 384, 240, 240);
     button_arabic = new Button (563, 384, 240, 240);
     button_english = new Button (224, 384, 240, 240);
+    button_restart = new Button (50, 20, 200, 80);
+    button_participating = new Button (712, 264, 500, 240);
+    button_experiencing = new Button (155, 264, 500, 240);
     checkbox_participating = new Checkbox(1275, 178, img_check_box);
-    checkbox_quitting = new Checkbox(1275, 271, img_check_box);
-    checkbox_data_collecting = new Checkbox(1275, 323, img_check_box);
-    checkbox_age_18 = new Checkbox(1275, 375, img_check_box);
-    checkbox_experiencing = new Checkbox(1275, 605, img_check_box);
+    checkbox_quitting = new Checkbox(1275, 291, img_check_box);
+    checkbox_data_collecting = new Checkbox(1275, 372, img_check_box);
+    checkbox_age_18 = new Checkbox(1275, 449, img_check_box);
     checkbox_museum_publications = new Checkbox(644, 401, img_check_box);
     button_hand_updown = new Button(1073, 336, 240, 240);
     button_hand_around = new Button(818, 336, 240, 240);
@@ -169,11 +175,13 @@ class TSession extends GraphicsDict {
     allButtons.add(button_hebrew);
     allButtons.add(button_arabic);
     allButtons.add(button_english);
+    allButtons.add(button_restart);
+    allButtons.add(button_participating);
+    allButtons.add(button_experiencing);
     allButtons.add(checkbox_participating);
     allButtons.add(checkbox_quitting);
     allButtons.add(checkbox_data_collecting);
     allButtons.add(checkbox_age_18);
-    allButtons.add(checkbox_experiencing);
     allButtons.add(checkbox_museum_publications);
     allButtons.add(button_hand_updown);
     allButtons.add(button_hand_around);
@@ -229,6 +237,25 @@ class TSession extends GraphicsDict {
     switch (state) {
     case INTRO_0:
       resetter.resetTimer();
+      break;
+
+    case CALIBRATION_1:
+      if (millis() - globalTimer > max_time_for_calibration) {
+        globalTimer = 0;
+        state = State.CALIBRATION_FAILED;
+      }
+      if (input_hand_left_right.skeletonGained()) {
+        logger.begin();
+        button_next.show();
+        button_restart.show();
+        missionNum = 1;
+        logger.log("Language", langFolder.substring(0, langFolder.length()-1));
+        state = State.MISSION_1_EXPLENATION;
+      }
+      break;
+
+    case CALIBRATION_FAILED:
+      if (millis() - globalTimer > 5000) end();
       break;
 
     case MISSION_1_INPUT_OPTION1:
@@ -320,7 +347,8 @@ class TSession extends GraphicsDict {
   }
 
   public void touch(int x, int y) {
-    //println(state.toString());
+    if (button_restart.touched(x, y)) end();
+    
     switch (state) {
     case INTRO_0:
       if (button_hebrew.touched(x, y)) {
@@ -380,82 +408,81 @@ class TSession extends GraphicsDict {
       }
       break;
 
-/*    case INTRO_2:
-      if (button_next.touched(x, y)) {
-        state = State.INTRO_3;
-      }
-      break;*/
-
-    case INTRO_2:  // INTRO_3:
+    case INTRO_2:
       if (button_next.touched(x, y)) {
         if (lang == Lang.ENGLISH) {
           participating = false;
           logger.off();
-          button_next.hide();
-          button_hand_updown.show();
-          button_hand_around.show();
-          button_clapping.show();
-          button_head_leftright.show();
-          button_hand_leftright.show();
-          missionNum = 1;
-          missionTimer = millis();
-          state = State.MISSION_1_SELECT;
+          state = State.CALIBRATION_0;
         } else {
-          state = State.APPROVAL;
+          state = State.APPROVAL_0;
           button_next.hide();
-          checkbox_participating.show();
-          checkbox_quitting.show();
-          checkbox_data_collecting.show();
-          checkbox_age_18.show();
-          checkbox_experiencing.show();
+          button_participating.show();
+          button_experiencing.show();
         }
       }
       break;
 
-    case APPROVAL:
+    case APPROVAL_0:
+      if (button_experiencing.touched(x, y)) {
+        participating = false;
+        logger.off();
+        button_next.show();
+        state = State.CALIBRATION_0;
+      } 
+      if (button_participating.touched(x, y)) {
+        participating = true;
+        state = State.APPROVAL_1;
+        button_participating.hide();
+        button_experiencing.hide();
+        checkbox_participating.show();
+        checkbox_quitting.show();
+        checkbox_data_collecting.show();
+        checkbox_age_18.show();
+      }
+      break;
+
+    case APPROVAL_1:
       checkbox_participating.touched(x, y); // pass a touch if applicable, to switch checkbox on state
       checkbox_quitting.touched(x, y);
       checkbox_data_collecting.touched(x, y);
       checkbox_age_18.touched(x, y);
       // checkboxes logic
-      if (checkbox_experiencing.touched(x, y)) {
-        if (checkbox_experiencing.getState()) {
-          checkbox_participating.off();
-          checkbox_quitting.off();
-          checkbox_data_collecting.off();
-          checkbox_age_18.off();
-        }
-      }
-      if (checkbox_participating.getState()) checkbox_experiencing.off();
-      if (checkbox_quitting.getState()) checkbox_experiencing.off();
-      if (checkbox_data_collecting.getState()) checkbox_experiencing.off();
-      if (checkbox_age_18.getState()) checkbox_experiencing.off();
-      if ((checkbox_participating.getState() && checkbox_quitting.getState() && checkbox_data_collecting.getState() && checkbox_age_18.getState()) || checkbox_experiencing.getState()) button_next.show();
+      if (checkbox_participating.getState() && checkbox_quitting.getState() && checkbox_data_collecting.getState() && checkbox_age_18.getState()) button_next.show();
       else button_next.hide();
 
       if (button_next.touched(x, y)) {
-        if (checkbox_participating.getState()) {
-          participating = true;
-          logger.begin();
-        } else {
-          participating = false;
-          logger.off();
-        }
-        button_next.hide();
         checkbox_participating.hide();
         checkbox_quitting.hide();
         checkbox_data_collecting.hide();
         checkbox_age_18.hide();
-        checkbox_experiencing.hide();
+        state = State.CALIBRATION_0;
+      }
+      break;
+
+    case CALIBRATION_0:
+      if (button_next.touched(x, y)) {
+        globalTimer = millis();
+        button_next.hide();
+        resetter.resetTimer();
+        state = State.CALIBRATION_1;
+      }
+      break;
+
+    case MISSION_1_EXPLENATION:
+    case MISSION_2_EXPLENATION:
+    case MISSION_3_EXPLENATION:
+    case MISSION_4_EXPLENATION:
+    case MISSION_5_EXPLENATION:
+      if (button_next.touched(x, y)) {
+        button_next.hide();
         button_hand_updown.show();
         button_hand_around.show();
         button_clapping.show();
         button_head_leftright.show();
         button_hand_leftright.show();
-        missionNum = 1;
-        logger.log("Language", langFolder.substring(0, langFolder.length()-1));
         missionTimer = millis();
-        state = State.MISSION_1_SELECT;
+        state = State.valueOf("MISSION_"+missionNum+"_SELECT");
       }
       break;
 
@@ -582,16 +609,10 @@ class TSession extends GraphicsDict {
     case MISSION_4_SELFIE:
     case MISSION_5_SELFIE:
       if (button_next.touched(x, y)) {
-        button_next.hide();
         missionNum++;
         if (missionNum <= 5) {
           missionTimer = millis();
-          button_hand_updown.show();
-          button_hand_around.show();
-          button_clapping.show();
-          button_head_leftright.show();
-          button_hand_leftright.show();
-          state = State.valueOf("MISSION_"+missionNum+"_SELECT");
+          state = State.valueOf("MISSION_"+missionNum+"_EXPLENATION");
         } else {
           lightPanel.logSummary();
           state = State.SHOW_SELECT_ALL_SELFIES;
@@ -645,7 +666,12 @@ class TSession extends GraphicsDict {
         checkbox_museum_publications.hide();
         button_next.hide();
         selfie.setMailAddress(text_get_mail0.getText()+"@"+text_get_mail1.getText());
-        selfie.start();
+        try {
+          selfie.start();
+        }
+        catch(IllegalThreadStateException ex) {
+          println(ex);
+        }
         if (participating) {
           button_sel_question_1.show();
           button_sel_question_2.show();
@@ -970,14 +996,13 @@ enum State {
   INTRO_0,
     INTRO_1,
     INTRO_2,
-//    INTRO_3,
-    APPROVAL,
+    APPROVAL_0,
+    APPROVAL_1,
+    CALIBRATION_0,
+    CALIBRATION_1,
+    CALIBRATION_FAILED,
+    MISSION_1_EXPLENATION,
     MISSION_1_SELECT,
-    MISSION_1_SELECT_OPTION1,
-    MISSION_1_SELECT_OPTION2,
-    MISSION_1_SELECT_OPTION3,
-    MISSION_1_SELECT_OPTION4,
-    MISSION_1_SELECT_OPTION5,
     MISSION_1_INPUT_OPTION1,
     MISSION_1_INPUT_OPTION2,
     MISSION_1_INPUT_OPTION3,
@@ -985,12 +1010,8 @@ enum State {
     MISSION_1_INPUT_OPTION5,
     MISSION_1_SELFIE,
     MISSION_1_SAVE_SELFIE,
+    MISSION_2_EXPLENATION,
     MISSION_2_SELECT,
-    MISSION_2_SELECT_OPTION1,
-    MISSION_2_SELECT_OPTION2,
-    MISSION_2_SELECT_OPTION3,
-    MISSION_2_SELECT_OPTION4,
-    MISSION_2_SELECT_OPTION5,
     MISSION_2_INPUT_OPTION1,
     MISSION_2_INPUT_OPTION2,
     MISSION_2_INPUT_OPTION3,
@@ -998,12 +1019,8 @@ enum State {
     MISSION_2_INPUT_OPTION5,
     MISSION_2_SELFIE,
     MISSION_2_SAVE_SELFIE,
+    MISSION_3_EXPLENATION,
     MISSION_3_SELECT,
-    MISSION_3_SELECT_OPTION1,
-    MISSION_3_SELECT_OPTION2,
-    MISSION_3_SELECT_OPTION3,
-    MISSION_3_SELECT_OPTION4,
-    MISSION_3_SELECT_OPTION5,
     MISSION_3_INPUT_OPTION1,
     MISSION_3_INPUT_OPTION2,
     MISSION_3_INPUT_OPTION3,
@@ -1011,12 +1028,8 @@ enum State {
     MISSION_3_INPUT_OPTION5,
     MISSION_3_SELFIE,
     MISSION_3_SAVE_SELFIE,
+    MISSION_4_EXPLENATION,
     MISSION_4_SELECT,
-    MISSION_4_SELECT_OPTION1,
-    MISSION_4_SELECT_OPTION2,
-    MISSION_4_SELECT_OPTION3,
-    MISSION_4_SELECT_OPTION4,
-    MISSION_4_SELECT_OPTION5,
     MISSION_4_INPUT_OPTION1,
     MISSION_4_INPUT_OPTION2,
     MISSION_4_INPUT_OPTION3,
@@ -1024,12 +1037,8 @@ enum State {
     MISSION_4_INPUT_OPTION5,
     MISSION_4_SELFIE,
     MISSION_4_SAVE_SELFIE,
+    MISSION_5_EXPLENATION,
     MISSION_5_SELECT,
-    MISSION_5_SELECT_OPTION1,
-    MISSION_5_SELECT_OPTION2,
-    MISSION_5_SELECT_OPTION3,
-    MISSION_5_SELECT_OPTION4,
-    MISSION_5_SELECT_OPTION5,
     MISSION_5_INPUT_OPTION1,
     MISSION_5_INPUT_OPTION2,
     MISSION_5_INPUT_OPTION3,

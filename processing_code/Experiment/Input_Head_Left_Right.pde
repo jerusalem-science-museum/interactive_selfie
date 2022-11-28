@@ -9,8 +9,8 @@ class Input_Head_Left_Right extends Input_Kinect_Head {
   @Override
     public void run() {
     float yaw = 0, roll = 0, pitch = 0;
-int t = millis();
-    shrinkedCam.copy(kinect.getColorImage(), 0, 0, 1920, 1080, 0, 0, 1920/shrinkRatio, 1080/shrinkRatio);
+    shrinkedCam.copy(kinect.getColorImage(), sourceX, sourceY, sourceW, sourceH, 0, 0, sourceW/shrinkRatio, sourceH/shrinkRatio);
+//image(shrinkedCam,0,0);
     detections = faceNetworkYawPitch.run(shrinkedCam);
     if (detections.size() > 0) {
       markedFaces = facemark.runByDetections(shrinkedCam, detections);
@@ -32,15 +32,19 @@ int t = millis();
 
     detections = faceNetworkRoll.run(shrinkedCam);
     if (detections.size() > 0) {
+//noFill();
+//rect(detections.get(0).getX(), detections.get(0).getY(), detections.get(0).getWidth(), detections.get(0).getHeight());
       markedFaces = facemark.runByDetections(shrinkedCam, detections);
-
       // roll:
       List<KeyPointResult> kp = markedFaces.get(0).getKeyPoints();
       float leftRy = kp.get(1).getY();
       float rightRy = kp.get(15).getY();
-      float leftYx = kp.get(1).getX();
-      float rightYx = kp.get(15).getX();
-      float faceWidth = rightYx-leftYx;
+      float leftRx = kp.get(1).getX();
+      float rightRx = kp.get(15).getX();
+//fill(255);
+//for (int i=0;i<kp.size(); i++)
+//ellipse(kp.get(i).getX(),kp.get(i).getY(),5,5);
+      float faceWidth = rightRx-leftRx;
       roll = (rightRy - leftRy)/faceWidth;
       float rollOutput = map(roll, -0.2, 0.2, 0, 999);
       outputArray[filterIndex++] = (int)constrain(rollOutput, 0, 999);
@@ -50,7 +54,7 @@ int t = millis();
         output += outputArray[i];
       output /= filterLength;
     }
-    //println("roll: "+roll+"\tyaw: "+yaw+"\tpitch: "+pitch);
+    println("roll: "+roll+"\tyaw: "+yaw+"\tpitch: "+pitch);
     logger.gestureLog(pitch, yaw, roll);
   }
 }

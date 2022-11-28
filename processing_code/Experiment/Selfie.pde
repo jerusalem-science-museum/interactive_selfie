@@ -13,10 +13,12 @@ class Selfie extends Thread {
   PImage frame382;
   PImage frame284;
   PImage frame240;
+  PImage frameMask;
+  PGraphics mailPicPG;
   String mailAddress;
   SendMail sendMail;
 
-  final String imgFileName = "selfie.jpg";
+  final String imgFileName = "selfie.png";
 
   public Selfie(PApplet par, KinectPV2 knct) {
     parent = par;
@@ -26,6 +28,7 @@ class Selfie extends Thread {
       pictures[i] = createImage(720, 720, RGB);
     }
     croppedPic = createImage(720, 720, RGB);
+    mailPicPG = createGraphics(382, 382);
     sendMail = new SendMail(parent.sketchPath());
     loadFrames();
   }
@@ -34,6 +37,7 @@ class Selfie extends Thread {
     frame382 = loadImage("../Graphics_Common/Selfie frame - regular.png");
     frame284 = loadImage("../Graphics_Common/Selfie frame - screen 0030.png");
     frame240 = loadImage("../Graphics_Common/Selfie frame - screen 0029.png");
+    frameMask = loadImage("../Graphics_Common/Selfie frame - mask.png");
   }
 
   public void begin() {
@@ -58,7 +62,7 @@ class Selfie extends Thread {
 
   public void show() {
     if (currentPic == takingPic) {
-      croppedPic.copy(kinect.getColorImage(), 600, 180, 720, 720, 0, 0, 720, 720);
+      croppedPic.copy(kinect.getColorImage(), 600, 0, 720, 720, 0, 0, 720, 720);
     }
     image(croppedPic, 492, 317, 382, 382);
     image(frame382, 492, 317);
@@ -81,7 +85,7 @@ class Selfie extends Thread {
   public void savePic(int p) {
     croppedPic.copy(pictures[p], 0, 0, 720, 720, 0, 0, 720, 720);
     selected = p;
-    croppedPic.save(imgFileName);
+   // croppedPic.save(imgFileName);
   }
 
   public void setMailAddress(String target) {
@@ -93,8 +97,13 @@ class Selfie extends Thread {
       println("Illegal email address: " + mailAddress);
       return;
     }
-
     try {
+      mailPicPG.beginDraw();
+      mailPicPG.image(croppedPic, 0, 0, 382, 382);
+      mailPicPG.image(frame382, 0, 0);
+      mailPicPG.mask(frameMask);
+      mailPicPG.endDraw();
+      mailPicPG.save(imgFileName);
       sendMail.send(mailAddress);
     }
     catch (NoSuchMethodError er) {

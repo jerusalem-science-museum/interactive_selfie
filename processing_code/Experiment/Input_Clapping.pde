@@ -25,7 +25,7 @@ class Input_Clapping extends Input {
     //    input.start();
     firstMeasure = true;
     active = true;
-    output = 0;
+    output = CLAP_IDLE;
     return true;
   }
 

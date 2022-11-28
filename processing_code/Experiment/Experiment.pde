@@ -13,6 +13,8 @@ On the language settings of Win, set shortcuts for:
   Hebrew:  Alt-Shift-1
   Arabic:  Alt-Shift-2
   
+AutoHotKey need to be installed and the script in the processing_code folder added to startup folder of the computer (for blocking half-technical users from closing the program).
+for quiting the program after running the script - press Alt-q.
 */
 
 // tested on original computer:
@@ -59,8 +61,8 @@ void mouseDragged() {
 
 void keyPressed() {
   resetter.resetTimer();
-  //if (key==ESC) key = 0;  // REMOVE BEFORE FLIGHT ...
-  //else
+  if (key==ESC) key = 0;  // REMOVE BEFORE FLIGHT ...
+  else
   session.keyPressed(key);
 }
 

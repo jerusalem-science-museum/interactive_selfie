@@ -37,6 +37,11 @@ class Input_Kinect_Hand extends Input {
     return true;
   }
   
+  public boolean skeletonGained() {
+    ArrayList<KSkeleton> skeletonArray =  kinect.getSkeleton3d();
+    return skeletonArray.size() > 0;
+  }
+  
   protected void setActionZone() {
   }
   
