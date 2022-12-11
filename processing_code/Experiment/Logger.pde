@@ -51,7 +51,7 @@ class Logger {
     table.addColumn("Qestion5 (Binary)");
     table.addColumn("Slider1");                 // (1-1000)
     table.addColumn("Slider2");
-    table.addColumn("Slider3");
+    table.addColumn("MultiQuestion3 (Binary)");
     table.addColumn("Slider4");
     table.addColumn("Slider5");
     table.addColumn("Slider6");
