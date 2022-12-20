@@ -13,10 +13,14 @@ class Logger {
   boolean headGesture; // true = head. false = hand.
   Date date;
   Body_Logger body_logger;
+  XML userIDXML;
+  int userID;
+  String userIDstr;
 
   public Logger(KinectPV2 knct) {
     dayTimestamp = timestamp();
     table = new Table();
+    table.addColumn("ID");
     table.addColumn("Timestamp");
     table.addColumn("Language");
     table.addColumn("Mission1_Selection");       // selected input (1-5 left to right)
@@ -44,14 +48,15 @@ class Logger {
     table.addColumn("Summary_Power");            // selected power: 50 = weakest, 255 = strongest
     table.addColumn("Summary_Y");                // selected vertical pos: 0 = lowest, 999 = highest
     table.addColumn("Summary_X");                // selected horizontal pos: 0 = left, 999 = right
-    table.addColumn("Qestion1 (Binary)");                // selection (1-5 left to right)
-    table.addColumn("Qestion2 (Binary)");
-    table.addColumn("Qestion3 (Binary)");
-    table.addColumn("Qestion4 (Binary)");
-    table.addColumn("Qestion5 (Binary)");
+    table.addColumn("Question1 (Binary)");                // selection (1-5 left to right)
+    table.addColumn("Question2 (Binary)");
+    table.addColumn("Question3 (Binary)");
+    table.addColumn("Question4 (Binary)");
+    table.addColumn("Question5 (Binary)");
+    table.addColumn("Question6 (Binary)");
     table.addColumn("Slider1");                 // (1-1000)
     table.addColumn("Slider2");
-    table.addColumn("MultiQuestion3 (Binary)");
+    table.addColumn("Slider3");
     table.addColumn("Slider4");
     table.addColumn("Slider5");
     table.addColumn("Slider6");
@@ -66,17 +71,29 @@ class Logger {
     table.addColumn("Handedness");
 
     body_logger = new Body_Logger(knct);
+    userIDXML = loadXML("../UserIDNum.xml");
+    userID = userIDXML.getInt("id");
+    userIDstr = nf(userID, 6);
   }
 
   public void begin() {
     if (active) { // previous session not finished correctly
       table.removeRow(table.getRowCount()-1);
     }
+    else {
+      userID++;
+      userIDstr = nf(userID, 6);
+      userIDXML.setInt("id", userID);
+      if (!saveXML(userIDXML, "UserIDNum.xml")) {
+        println("PROBLEM SAVING USER NUM!");
+      }
+    }      
     sessionRow = table.addRow();
     sessionTimestamp = timestamp();
+    sessionRow.setInt("ID", userID);
     sessionRow.setString("Timestamp", sessionTimestamp);
     active = true;
-    body_logger.begin(sessionTimestamp);
+    body_logger.begin(userIDstr, sessionTimestamp);
     recordingGesture = false;
   }
 
@@ -89,6 +106,16 @@ class Logger {
   public void end() {
     if (active) {
       saveTable(table, "../logs/"+dayTimestamp+".csv");
+      
+      // add the signature ("BOM") of the UTF-8 to the beginning of the file, in order to make the hebrew readable by excel
+      byte[] tbl = loadBytes("../logs/"+dayTimestamp+".csv");
+      byte[] tblp = new byte[tbl.length+3];
+      tblp[0] = -17;
+      tblp[1] = -69;
+      tblp[2] = -65;
+      arrayCopy(tbl, 0, tblp, 3, tbl.length);
+      saveBytes("../logs/"+dayTimestamp+".csv", tblp);
+      
       body_logger.end();
       active = false;
     }
@@ -116,10 +143,10 @@ class Logger {
     return String.format("%d-%02d-%02d-%02d-%02d-%02d", year(), month(), day(), hour(), minute(), second());
   }
 
-  public void startGestureRecord(String recName, boolean headGes) {  // should be called inside the session state machine. name will be mission num + selected input
+  public void startGestureRecord(String recName, boolean headGes) {  // should be called inside the session state machine. name will be userID + mission num + selected input
     if (active) {
       gestureTable = new Table();
-      gestureFileName = "../logs/" + sessionTimestamp + "/" + recName + ".csv";
+      gestureFileName = "../logs/" + userIDstr + "-" + sessionTimestamp + "/" + recName + ".csv";
       recordingGesture = true;
       headGesture = headGes;
       if (headGesture) {

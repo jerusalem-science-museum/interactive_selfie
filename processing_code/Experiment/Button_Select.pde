@@ -35,7 +35,7 @@ class Button_Select extends Button {
         if (btns[i].touched(mx, my)) {
           print("selected: "+selected);
           selected ^= 1<<i;
-          println("\ti: "+i+"\tselected: "+selected);
+         // println("\ti: "+i+"\tselected: "+selected);
           //for (int j=0; j<5; j++) btns[j].off();
           //btns[i].on();
           return true;

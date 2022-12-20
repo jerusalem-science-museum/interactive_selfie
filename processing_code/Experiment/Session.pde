@@ -1,6 +1,7 @@
 import KinectPV2.KJoint; //<>//
 import KinectPV2.*;
-import ch.bildspur.vision.*;
+import ch.bildspur.vision.DeepVision;
+import ch.bildspur.vision.SingleHumanPoseNetwork;
 import ch.bildspur.vision.result.*;
 import java.util.List;
 import processing.serial.*;
@@ -17,9 +18,8 @@ class TSession extends GraphicsDict {
 
   KinectPV2 kinect;
   DeepVision vision = new DeepVision(parent);
-  CascadeClassifierNetwork faceNetworkYawPitch;
-  ULFGFaceDetectionNetwork faceNetworkRoll;
-  FacemarkLBFNetwork facemark;
+  //vision.setUseDefaultBackend(true);
+  SingleHumanPoseNetwork pose;
   Serial lightPort;
 
   final String graphicsFolder = "../Graphics_";
@@ -65,14 +65,20 @@ class TSession extends GraphicsDict {
   Button_Select button_sel_question_4;
   Button_Select button_sel_question_5;
   Slider slider_1;
+  Slider slider_2;
+  Slider slider_3;
+  Slider slider_4;
+  Slider slider_5;
+  Slider slider_6;
+  Slider slider_7;
+  Slider slider_8;
+  Slider slider_9;
   Checkbox checkbox_quest_control_voice;
   Checkbox checkbox_quest_control_touch;
   Checkbox checkbox_quest_control_thought;
   Checkbox checkbox_quest_control_hands_motion;
   Checkbox checkbox_quest_control_eyes_motion;
   Checkbox checkbox_quest_control_moving_around;
-  Slider slider_2_4_6_8;
-  Slider slider_3_5_7_9;
   Radio_Button rb_gender_female;
   Radio_Button rb_gender_male;
   Radio_Button rb_education_highschool;
@@ -116,15 +122,10 @@ class TSession extends GraphicsDict {
 
     logger = new Logger(kinect);
 
-    faceNetworkYawPitch = vision.createCascadeFrontalFace();
-    faceNetworkRoll = vision.createULFGFaceDetectorRFB640();
-    facemark = vision.createFacemarkLBF();
-    faceNetworkYawPitch.setup();
-    faceNetworkRoll.setup();
-    facemark.setup();
+    pose = vision.createSingleHumanPoseEstimation();
+    pose.setup();
 
     selfie = new Selfie(parent, kinect);
-
     println("Connected COM ports:");
     printArray(Serial.list());
     if (Serial.list().length > 0)
@@ -134,7 +135,7 @@ class TSession extends GraphicsDict {
     input_clapping = new Input_Clapping(parent, logger, resetter);
     input_hand_left_right = new Input_Hand_Left_Right(parent, logger, resetter, kinect);
     input_hand_up_down = new Input_Hand_Up_Down(parent, logger, resetter, kinect);
-    input_head_left_right = new Input_Head_Left_Right(parent, logger, resetter, kinect, vision, faceNetworkYawPitch, faceNetworkRoll, facemark);
+    input_head_left_right = new Input_Head_Left_Right(parent, logger, resetter, kinect, vision, pose);
     input_head_left_right.run();  // need to run once for preloading models
     input_touch = new Input_Touch(parent, logger, resetter, lightPort);  // change if different controller
 
@@ -151,31 +152,37 @@ class TSession extends GraphicsDict {
     button_participating = new Button (712, 264, 500, 240);
     button_experiencing = new Button (155, 264, 500, 240);
     checkbox_participating = new Checkbox(1275, 178, img_check_box);
-    checkbox_quitting = new Checkbox(1275, 291, img_check_box);
-    checkbox_data_collecting = new Checkbox(1275, 372, img_check_box);
-    checkbox_age_18 = new Checkbox(1275, 449, img_check_box);
-    checkbox_museum_publications = new Checkbox(644, 401, img_check_box);
+    checkbox_quitting = new Checkbox(1275, 256, img_check_box);
+    checkbox_data_collecting = new Checkbox(1275, 339, img_check_box);
+    checkbox_age_18 = new Checkbox(1275, 418, img_check_box);
+    checkbox_museum_publications = new Checkbox(645, 401, img_check_box);
     button_hand_updown = new Button(1073, 336, 240, 240);
     button_hand_around = new Button(818, 336, 240, 240);
     button_clapping = new Button(563, 336, 240, 240);
     button_head_leftright = new Button(308, 336, 240, 240);
     button_hand_leftright = new Button(53, 336, 240, 240);
-    slider_1 = new Slider(183-20, 469-49, img_slider_pointer);
-    checkbox_quest_control_voice = new Checkbox(1247, 509, img_check_box);
-    checkbox_quest_control_touch = new Checkbox(931, 509, img_check_box);
-    checkbox_quest_control_thought = new Checkbox(614, 509, img_check_box);
-    checkbox_quest_control_hands_motion = new Checkbox(1247, 576, img_check_box);
-    checkbox_quest_control_eyes_motion = new Checkbox(931, 576, img_check_box);
-    checkbox_quest_control_moving_around = new Checkbox(615, 576, img_check_box);
-    slider_2_4_6_8 = new Slider(183-20, 305-49, img_slider_pointer);
-    slider_3_5_7_9 = new Slider(183-20, 554-49, img_slider_pointer);
-    rb_gender_female = new Radio_Button(1053, 187, img_radio_button_selected, img_radio_button_empty);
-    rb_gender_male = new Radio_Button(836, 187, img_radio_button_selected, img_radio_button_empty);
-    rb_education_highschool = new Radio_Button(1053, 259, img_radio_button_selected, img_radio_button_empty);
-    rb_education_academic = new Radio_Button(836, 259, img_radio_button_selected, img_radio_button_empty);
-    rb_education_other = new Radio_Button(578, 259, img_radio_button_selected, img_radio_button_empty);
-    rb_handedness_right = new Radio_Button(1053, 331, img_radio_button_selected, img_radio_button_empty);
-    rb_handedness_left = new Radio_Button(836, 331, img_radio_button_selected, img_radio_button_empty);
+    slider_1 = new Slider(183-20, 423-49, img_slider_pointer);
+    slider_2 = new Slider(183-20, 334-49, img_slider_pointer);
+    slider_3 = new Slider(183-20, 554-49, img_slider_pointer);
+    slider_4 = new Slider(183-20, 305-49, img_slider_pointer);
+    slider_5 = new Slider(183-20, 535-49, img_slider_pointer);
+    slider_6 = new Slider(183-20, 305-49, img_slider_pointer);
+    slider_7 = new Slider(183-20, 574-49, img_slider_pointer);
+    slider_8 = new Slider(183-20, 305-49, img_slider_pointer);
+    slider_9 = new Slider(183-20, 554-49, img_slider_pointer);
+    checkbox_quest_control_voice = new Checkbox(1245, 280, img_check_box);
+    checkbox_quest_control_touch = new Checkbox(929, 280, img_check_box);
+    checkbox_quest_control_thought = new Checkbox(613, 280, img_check_box);
+    checkbox_quest_control_hands_motion = new Checkbox(1245, 377, img_check_box);
+    checkbox_quest_control_eyes_motion = new Checkbox(929, 377, img_check_box);
+    checkbox_quest_control_moving_around = new Checkbox(613, 377, img_check_box);
+    rb_gender_female = new Radio_Button(955, 187, img_radio_button_selected, img_radio_button_empty);
+    rb_gender_male = new Radio_Button(738, 187, img_radio_button_selected, img_radio_button_empty);
+    rb_education_highschool = new Radio_Button(955, 259, img_radio_button_selected, img_radio_button_empty);
+    rb_education_academic = new Radio_Button(738, 259, img_radio_button_selected, img_radio_button_empty);
+    rb_education_other = new Radio_Button(480, 259, img_radio_button_selected, img_radio_button_empty);
+    rb_handedness_right = new Radio_Button(955, 331, img_radio_button_selected, img_radio_button_empty);
+    rb_handedness_left = new Radio_Button(738, 331, img_radio_button_selected, img_radio_button_empty);
     rb_gender_female.assignConnected(new Radio_Button[] {rb_gender_male});
     rb_gender_male.assignConnected(new Radio_Button[] {rb_gender_female});
     rb_education_highschool.assignConnected(new Radio_Button[] {rb_education_academic, rb_education_other});
@@ -200,18 +207,21 @@ class TSession extends GraphicsDict {
     allButtons.add(button_clapping);
     allButtons.add(button_head_leftright);
     allButtons.add(button_hand_leftright);
-    allButtons.add(slider_1);
     allButtons.add(checkbox_quest_control_voice);
     allButtons.add(checkbox_quest_control_touch);
     allButtons.add(checkbox_quest_control_thought);
     allButtons.add(checkbox_quest_control_hands_motion);
     allButtons.add(checkbox_quest_control_eyes_motion);
     allButtons.add(checkbox_quest_control_moving_around);
-    allButtons.add(slider_2_4_6_8);
-    allButtons.add(slider_3_5_7_9);
     allSliders.add(slider_1);
-    allSliders.add(slider_2_4_6_8);
-    allSliders.add(slider_3_5_7_9);
+    allSliders.add(slider_2);
+    allSliders.add(slider_3);
+    allSliders.add(slider_4);
+    allSliders.add(slider_5);
+    allSliders.add(slider_6);
+    allSliders.add(slider_7);
+    allSliders.add(slider_8);
+    allSliders.add(slider_9);
     allButtons.add(rb_gender_female);
     allButtons.add(rb_gender_male);
     allButtons.add(rb_education_highschool);
@@ -230,6 +240,9 @@ class TSession extends GraphicsDict {
     allTexts.add(text_further_ideas);
     allTexts.add(text_get_age);
     allTexts.add(text_get_profession);
+    textFont(createFont("tahoma.ttf", 34, true)); // 36
+    textLeading(42);
+
 
     loadGraphicsNames();
     images.put (State.INTRO_0, loadImage(graphicsFolder + langFolder + graphicFileName.get(State.INTRO_0)));
@@ -239,7 +252,7 @@ class TSession extends GraphicsDict {
     sessionRunning = true;
     button_hebrew.show();
     button_arabic.show();
-    button_english.show();
+    //    button_english.show();
     state = State.INTRO_0;
     participating = true;
     selfie.reset();
@@ -259,13 +272,12 @@ class TSession extends GraphicsDict {
 
     case CALIBRATION_1:
       if (millis() - globalTimer > max_time_for_calibration) {
-        globalTimer = 0;
+        globalTimer = millis();
         state = State.CALIBRATION_FAILED;
       }
       if (input_hand_left_right.skeletonGained()) {
         logger.begin();
         button_next.show();
-        button_restart.show();
         missionNum = 1;
         logger.log("Language", langFolder.substring(0, langFolder.length()-1));
         state = State.MISSION_1_EXPLENATION;
@@ -335,14 +347,6 @@ class TSession extends GraphicsDict {
       selfie.show();
       break;
 
-    case MISSION_1_SAVE_SELFIE:
-    case MISSION_2_SAVE_SELFIE:
-    case MISSION_3_SAVE_SELFIE:
-    case MISSION_4_SAVE_SELFIE:
-    case MISSION_5_SAVE_SELFIE:
-      selfie.show();
-      break;
-
     case SHOW_SELECT_ALL_SELFIES:
       selfie.showAll();
       break;
@@ -361,12 +365,11 @@ class TSession extends GraphicsDict {
     lightPanel.run();
     for (Button b : allButtons) b.run();
     for (Text_Input t : allTexts) t.run();
+    for (Slider s : allSliders) s.run();
     logger.run();
   }
 
   public void touch(int x, int y) {
-    if (button_restart.touched(x, y)) end();
-    
     switch (state) {
     case INTRO_0:
       if (button_hebrew.touched(x, y)) {
@@ -405,23 +408,13 @@ class TSession extends GraphicsDict {
     case INTRO_1:
       if (button_next.touched(x, y)) {
         state = State.INTRO_2;
-
-        /* integration jump to mission 1: */
-        if (jumpToInputs) {
-          button_hand_updown.show();
-          button_hand_around.show();
-          button_clapping.show();
-          button_head_leftright.show();
-          button_hand_leftright.show();
-          missionNum = 1;
-          missionTimer = millis();
-          state = State.MISSION_1_SELECT;
-        }
         /*
-          button_sel_question_1.show();
-         button_sel_question_2.show();
-         button_next.hide();
-         state = State.QUESTIONARE_0;
+        Text_Input.showOSK(Lang.ENGLISH);
+         text_get_mail0.show();
+         text_get_mail0.begin();
+         text_get_mail1.show();
+         checkbox_museum_publications.show();
+         state = State.GET_EMAIL;
         /**/
       }
       break;
@@ -445,14 +438,16 @@ class TSession extends GraphicsDict {
       if (button_experiencing.touched(x, y)) {
         participating = false;
         logger.off();
+        button_restart.show();
         button_next.show();
         state = State.CALIBRATION_0;
-      } 
+      }
       if (button_participating.touched(x, y)) {
         participating = true;
         state = State.APPROVAL_1;
         button_participating.hide();
         button_experiencing.hide();
+        button_restart.show();
         checkbox_participating.show();
         checkbox_quitting.show();
         checkbox_data_collecting.show();
@@ -684,9 +679,9 @@ class TSession extends GraphicsDict {
         }
         checkbox_museum_publications.hide();
         button_next.hide();
-        selfie.setMailAddress(text_get_mail0.getText()+"@"+text_get_mail1.getText());
+        selfie.setMailAddress(text_get_mail0.getText()+"@"+text_get_mail1.getText(), checkbox_museum_publications.getState());
         try {
-          selfie.start();
+          new Thread(selfie).start(); //selfie.start();
         }
         catch(IllegalThreadStateException ex) {
           println(ex);
@@ -709,8 +704,8 @@ class TSession extends GraphicsDict {
         button_next.show();
       }
       if (button_next.touched(x, y)) {
-        logger.log("Qestion1 (Binary)", button_sel_question_1.getSelected());
-        logger.log("Qestion2 (Binary)", button_sel_question_2.getSelected());
+        logger.log("Question1 (Binary)", button_sel_question_1.getSelected());
+        logger.log("Question2 (Binary)", button_sel_question_2.getSelected());
         button_sel_question_1.hide();
         button_sel_question_2.hide();
         button_sel_question_3.show();
@@ -729,43 +724,12 @@ class TSession extends GraphicsDict {
         button_next.show();
       }
       if (button_next.touched(x, y)) {
-        logger.log("Qestion3 (Binary)", button_sel_question_3.getSelected());
-        logger.log("Qestion4 (Binary)", button_sel_question_4.getSelected());
-        logger.log("Qestion5 (Binary)", button_sel_question_5.getSelected());
+        logger.log("Question3 (Binary)", button_sel_question_3.getSelected());
+        logger.log("Question4 (Binary)", button_sel_question_4.getSelected());
+        logger.log("Question5 (Binary)", button_sel_question_5.getSelected());
         button_sel_question_3.hide();
         button_sel_question_4.hide();
         button_sel_question_5.hide();
-        slider_1.show();
-        button_next.hide();
-        state = State.QUESTIONARE_2;
-      }
-      break;
-
-/*    case QUESTIONARE_2:
-      if (slider_1.touched(x, y)) {
-        button_next.show();
-      }
-
-      if (button_next.touched(x, y)) {
-        logger.log("Slider1", slider_1.getState());
-        slider_1.hide();
-        slider_2_4_6_8.show();
-        slider_3_5_7_9.show();
-        button_next.hide();
-        globalFlag = 0;
-        state = State.QUESTIONARE_3;
-      }
-      break;*/
-
-    case QUESTIONARE_2:
-      if (slider_1.touched(x, y)) {
-        button_next.show();
-      }
-
-      if (button_next.touched(x, y)) {
-        logger.log("Slider1", slider_1.getState());
-        slider_1.hide();
-        slider_2_4_6_8.show();
         checkbox_quest_control_voice.show();
         checkbox_quest_control_touch.show();
         checkbox_quest_control_thought.show();
@@ -773,52 +737,60 @@ class TSession extends GraphicsDict {
         checkbox_quest_control_eyes_motion.show();
         checkbox_quest_control_moving_around.show();
         button_next.hide();
-        globalFlag = 0;
-        state = State.QUESTIONARE_3;
+        state = State.QUESTIONARE_2;
       }
       break;
 
-    case QUESTIONARE_3:
-        checkbox_quest_control_voice.touched(x, y);
-        checkbox_quest_control_touch.touched(x, y);
-        checkbox_quest_control_thought.touched(x, y);
-        checkbox_quest_control_hands_motion.touched(x, y);
-        checkbox_quest_control_eyes_motion.touched(x, y);
-        checkbox_quest_control_moving_around.touched(x, y);
-      if (slider_2_4_6_8.touched(x, y)) {
-        globalFlag |= 1;
-      }
-      if ((globalFlag == 1) && (
-            checkbox_quest_control_voice.getState() ||
-            checkbox_quest_control_touch.getState() ||
-            checkbox_quest_control_thought.getState() ||
-            checkbox_quest_control_hands_motion.getState() ||
-            checkbox_quest_control_eyes_motion.getState() ||
-            checkbox_quest_control_moving_around.getState()      )
-          ) {
+    case QUESTIONARE_2:
+      checkbox_quest_control_voice.touched(x, y);
+      checkbox_quest_control_touch.touched(x, y);
+      checkbox_quest_control_thought.touched(x, y);
+      checkbox_quest_control_hands_motion.touched(x, y);
+      checkbox_quest_control_eyes_motion.touched(x, y);
+      checkbox_quest_control_moving_around.touched(x, y);
+      if (
+        checkbox_quest_control_voice.getState() ||
+        checkbox_quest_control_touch.getState() ||
+        checkbox_quest_control_thought.getState() ||
+        checkbox_quest_control_hands_motion.getState() ||
+        checkbox_quest_control_eyes_motion.getState() ||
+        checkbox_quest_control_moving_around.getState()
+        )
+      {
         button_next.show();
-      }
-      else {
+      } else {
         button_next.hide();
       }
       if (button_next.touched(x, y)) {
-        logger.log("Slider2", slider_2_4_6_8.getState());
-        logger.log("MultiQuestion3 (Binary)",
-          (checkbox_quest_control_voice.getState() ? 1 : 0) + 
-          (checkbox_quest_control_touch.getState() ? 2 : 0) + 
-          (checkbox_quest_control_thought.getState() ? 4 : 0) + 
-          (checkbox_quest_control_hands_motion.getState() ? 8 : 0) + 
-          (checkbox_quest_control_eyes_motion.getState() ? 16 : 0) + 
+        logger.log("Question3 (Binary)",
+          (checkbox_quest_control_voice.getState() ? 1 : 0) +
+          (checkbox_quest_control_touch.getState() ? 2 : 0) +
+          (checkbox_quest_control_thought.getState() ? 4 : 0) +
+          (checkbox_quest_control_hands_motion.getState() ? 8 : 0) +
+          (checkbox_quest_control_eyes_motion.getState() ? 16 : 0) +
           (checkbox_quest_control_moving_around.getState() ? 32 : 0)
-        );
+          );
         checkbox_quest_control_voice.hide();
         checkbox_quest_control_touch.hide();
         checkbox_quest_control_thought.hide();
         checkbox_quest_control_hands_motion.hide();
         checkbox_quest_control_eyes_motion.hide();
         checkbox_quest_control_moving_around.hide();
-        slider_2_4_6_8.show();
-        slider_3_5_7_9.show();
+        slider_1.show();
+        button_next.hide();
+        state = State.QUESTIONARE_3;
+      }
+      break;
+
+    case QUESTIONARE_3:
+      if (slider_1.touched(x, y)) {
+        button_next.show();
+      }
+      if (button_next.touched(x, y)) {
+        logger.log("Slider1", slider_1.getState());
+        slider_1.hide();
+        slider_2.show();
+        slider_3.show();
         globalFlag = 0;
         button_next.hide();
         state = State.QUESTIONARE_4;
@@ -826,20 +798,22 @@ class TSession extends GraphicsDict {
       break;
 
     case QUESTIONARE_4:
-      if (slider_2_4_6_8.touched(x, y)) {
+      if (slider_2.touched(x, y)) {
         globalFlag |= 1;
       }
-      if (slider_3_5_7_9.touched(x, y)) {
+      if (slider_3.touched(x, y)) {
         globalFlag |= 2;
       }
       if (globalFlag == 3) {
         button_next.show();
       }
       if (button_next.touched(x, y)) {
-        logger.log("Slider4", slider_2_4_6_8.getState());
-        logger.log("Slider5", slider_3_5_7_9.getState());
-        slider_2_4_6_8.show();
-        slider_3_5_7_9.show();
+        logger.log("Slider2", slider_2.getState());
+        logger.log("Slider3", slider_3.getState());
+        slider_2.hide();
+        slider_3.hide();
+        slider_4.show();
+        slider_5.show();
         globalFlag = 0;
         button_next.hide();
         state = State.QUESTIONARE_5;
@@ -847,20 +821,22 @@ class TSession extends GraphicsDict {
       break;
 
     case QUESTIONARE_5:
-      if (slider_2_4_6_8.touched(x, y)) {
+      if (slider_4.touched(x, y)) {
         globalFlag |= 1;
       }
-      if (slider_3_5_7_9.touched(x, y)) {
+      if (slider_5.touched(x, y)) {
         globalFlag |= 2;
       }
       if (globalFlag == 3) {
         button_next.show();
       }
       if (button_next.touched(x, y)) {
-        logger.log("Slider6", slider_2_4_6_8.getState());
-        logger.log("Slider7", slider_3_5_7_9.getState());
-        slider_2_4_6_8.show();
-        slider_3_5_7_9.show();
+        logger.log("Slider4", slider_4.getState());
+        logger.log("Slider5", slider_5.getState());
+        slider_4.hide();
+        slider_5.hide();
+        slider_6.show();
+        slider_7.show();
         globalFlag = 0;
         button_next.hide();
         state = State.QUESTIONARE_6;
@@ -868,28 +844,51 @@ class TSession extends GraphicsDict {
       break;
 
     case QUESTIONARE_6:
-      if (slider_2_4_6_8.touched(x, y)) {
+      if (slider_6.touched(x, y)) {
         globalFlag |= 1;
       }
-      if (slider_3_5_7_9.touched(x, y)) {
+      if (slider_7.touched(x, y)) {
         globalFlag |= 2;
       }
       if (globalFlag == 3) {
         button_next.show();
       }
       if (button_next.touched(x, y)) {
-        logger.log("Slider8", slider_2_4_6_8.getState());
-        logger.log("Slider9", slider_3_5_7_9.getState());
-        slider_2_4_6_8.hide();
-        slider_3_5_7_9.hide();
-        Text_Input.showOSK(lang);
-        text_further_ideas.show();
-        text_further_ideas.begin();
+        logger.log("Slider6", slider_6.getState());
+        logger.log("Slider7", slider_7.getState());
+        slider_6.hide();
+        slider_7.hide();
+        slider_8.show();
+        slider_9.show();
+        globalFlag = 0;
+        button_next.hide();
         state = State.QUESTIONARE_7;
       }
       break;
 
     case QUESTIONARE_7:
+      if (slider_8.touched(x, y)) {
+        globalFlag |= 1;
+      }
+      if (slider_9.touched(x, y)) {
+        globalFlag |= 2;
+      }
+      if (globalFlag == 3) {
+        button_next.show();
+      }
+      if (button_next.touched(x, y)) {
+        logger.log("Slider8", slider_8.getState());
+        logger.log("Slider9", slider_9.getState());
+        slider_8.hide();
+        slider_9.hide();
+        Text_Input.showOSK(lang);
+        text_further_ideas.show();
+        text_further_ideas.begin();
+        state = State.QUESTIONARE_8;
+      }
+      break;
+
+    case QUESTIONARE_8:
       text_further_ideas.touched(x, y);
       if (button_next.touched(x, y)) {
         logger.log("Further_Ideas", text_further_ideas.getText());
@@ -900,11 +899,11 @@ class TSession extends GraphicsDict {
         text_get_age.begin();
         text_get_profession.show();
         button_next.hide();
-        state = State.QUESTIONARE_8;
+        state = State.QUESTIONARE_9;
       }
       break;
 
-    case QUESTIONARE_8:
+    case QUESTIONARE_9:
       if (text_get_age.touched(x, y)) {
         text_get_profession.end();
       }
@@ -928,11 +927,11 @@ class TSession extends GraphicsDict {
         rb_handedness_left.show();
         button_next.hide();
         globalFlag = 0;
-        state = State.QUESTIONARE_9;
+        state = State.QUESTIONARE_10;
       }
       break;
 
-    case QUESTIONARE_9:
+    case QUESTIONARE_10:
       if (rb_gender_female.touched(x, y) || rb_gender_male.touched(x, y)) {
         globalFlag |= 1;
       }
@@ -968,6 +967,11 @@ class TSession extends GraphicsDict {
     default:
       break;
     }
+    
+    if (button_restart.touched(x, y)) {
+      Text_Input.hideOSK();
+      end();
+    }
   }
 
   public void end() {
@@ -985,6 +989,7 @@ class TSession extends GraphicsDict {
   private void loadImages() {
     // loading buttons with words
     println("Loading Buttons");
+    if (button_next != null) button_next.hide();
     button_next = new Button(50, 657, graphicsFolder + langFolder +"Component_button_continue_default.png");
     img_qst_option_1 = loadImage(graphicsFolder + langFolder + "Component_button_option1_selected_small.png");
     img_qst_option_2 = loadImage(graphicsFolder + langFolder + "Component_button_option2_selected_small.png");
@@ -1016,7 +1021,7 @@ class TSession extends GraphicsDict {
 
   public void keyPressed(char key) {
     for (Text_Input t : allTexts) t.keyPressed(key);
-    if (state == State.QUESTIONARE_8) {
+    if (state == State.QUESTIONARE_9) {
       if ((text_get_age.getText().length()>0) && (text_get_profession.getText().length()>0)) {
         button_next.show();
       }
@@ -1075,7 +1080,6 @@ enum State {
     MISSION_1_INPUT_OPTION4,
     MISSION_1_INPUT_OPTION5,
     MISSION_1_SELFIE,
-    MISSION_1_SAVE_SELFIE,
     MISSION_2_EXPLENATION,
     MISSION_2_SELECT,
     MISSION_2_INPUT_OPTION1,
@@ -1084,7 +1088,6 @@ enum State {
     MISSION_2_INPUT_OPTION4,
     MISSION_2_INPUT_OPTION5,
     MISSION_2_SELFIE,
-    MISSION_2_SAVE_SELFIE,
     MISSION_3_EXPLENATION,
     MISSION_3_SELECT,
     MISSION_3_INPUT_OPTION1,
@@ -1093,7 +1096,6 @@ enum State {
     MISSION_3_INPUT_OPTION4,
     MISSION_3_INPUT_OPTION5,
     MISSION_3_SELFIE,
-    MISSION_3_SAVE_SELFIE,
     MISSION_4_EXPLENATION,
     MISSION_4_SELECT,
     MISSION_4_INPUT_OPTION1,
@@ -1102,7 +1104,6 @@ enum State {
     MISSION_4_INPUT_OPTION4,
     MISSION_4_INPUT_OPTION5,
     MISSION_4_SELFIE,
-    MISSION_4_SAVE_SELFIE,
     MISSION_5_EXPLENATION,
     MISSION_5_SELECT,
     MISSION_5_INPUT_OPTION1,
@@ -1111,7 +1112,6 @@ enum State {
     MISSION_5_INPUT_OPTION4,
     MISSION_5_INPUT_OPTION5,
     MISSION_5_SELFIE,
-    MISSION_5_SAVE_SELFIE,
     SHOW_SELECT_ALL_SELFIES,
     GET_EMAIL,
     QUESTIONARE_0,
@@ -1124,5 +1124,6 @@ enum State {
     QUESTIONARE_7,
     QUESTIONARE_8,
     QUESTIONARE_9,
+    QUESTIONARE_10,
     GOODBYE_THANKS
 }

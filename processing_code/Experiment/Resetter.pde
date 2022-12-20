@@ -1,4 +1,4 @@
-final int no_input_time_to_reset = 30000;  // millis of no user input for resetting the session. Wroks like a watchdog.
+final int no_input_time_to_reset = 60000;  // millis of no user input for resetting the session. Wroks like a watchdog.
 
 class Resetter {
   TSession session;

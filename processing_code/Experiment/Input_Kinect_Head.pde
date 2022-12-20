@@ -3,27 +3,24 @@ class Input_Kinect_Head extends Input {
   DeepVision vision;
   ResultList<ObjectDetectionResult> detections;
   ResultList<FacialLandmarkResult> markedFaces;
-  CascadeClassifierNetwork faceNetworkYawPitch;  // this network works better for yaw and pitch
-  ULFGFaceDetectionNetwork faceNetworkRoll;      // this network works better for roll (at least in shrink ratio 3...)
-
-  FacemarkLBFNetwork facemark;
+  SingleHumanPoseNetwork pose;
+  HumanPoseResult result;
+  
   PImage shrinkedCam;
   final int shrinkRatio = 2;
-  final int sourceX = 640;
+  final int sourceX = 800;
   final int sourceY = 0;
-  final int sourceW = 640;
-  final int sourceH = 1080;
+  final int sourceW = 540;
+  final int sourceH = 880;
   int filterLength;
   int outputArray[];
   int filterIndex=0;
 
-  public Input_Kinect_Head(PApplet par, Logger log, Resetter res, KinectPV2 knct, DeepVision vis, CascadeClassifierNetwork faceNetYP, ULFGFaceDetectionNetwork faceNetR, FacemarkLBFNetwork facem) {
+  public Input_Kinect_Head(PApplet par, Logger log, Resetter res, KinectPV2 knct, DeepVision vis, SingleHumanPoseNetwork p) {
     super(par, log, res);
     kinect = knct;
     vision = vis;
-    faceNetworkYawPitch = faceNetYP;
-    faceNetworkRoll = faceNetR;
-    facemark = facem;
+    pose = p;
     shrinkedCam = createImage(sourceW/shrinkRatio, sourceH/shrinkRatio, RGB);
   }
   

@@ -1,7 +1,5 @@
 import java.util.*;
 
-boolean jumpToInputs = false;  // for other specific jump - update at "Session.pde" line ~370, and dont forget to show q hide relevant buttons/controls
-
 /* 
 Needed libraries:
   Kinect v2 for Processing
@@ -18,7 +16,7 @@ for quiting the program after running the script - press Alt-q.
 */
 
 // tested on original computer:
-// deep vision ver 7.0.1
+// deep vision ver 0.7.1
 // nvidia driver 511.79 10.2.2022
 // 
 // on newer computer worked with latest releases (GeForce RTX-3060 Ti)
@@ -38,11 +36,11 @@ void setup() {
 }
 
 void draw() {
-  session.run();
-  resetter.run();  // whatchdog
   if (!session.running()) {
     session.begin();
   }
+  session.run();
+  resetter.run();  // whatchdog
 }
 
 void mousePressed() {

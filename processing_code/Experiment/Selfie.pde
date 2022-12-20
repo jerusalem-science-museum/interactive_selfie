@@ -1,7 +1,9 @@
 import myselfie.emailer.SendMail;
 import org.apache.commons.validator.routines.EmailValidator;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
 
-class Selfie extends Thread {
+class Selfie implements Runnable { //extends Thread {
   PApplet parent;
   KinectPV2 kinect;
   int currentPic;
@@ -15,9 +17,16 @@ class Selfie extends Thread {
   PImage frame240;
   PImage frameMask;
   PGraphics mailPicPG;
+
   String mailAddress;
+  boolean addvertise;
   SendMail sendMail;
 
+  final String mailLogFilename = "maillog.txt";
+  File file;
+  FileWriter fw;
+  BufferedWriter bw;
+  
   final String imgFileName = "selfie.png";
 
   public Selfie(PApplet par, KinectPV2 knct) {
@@ -31,6 +40,14 @@ class Selfie extends Thread {
     mailPicPG = createGraphics(382, 382);
     sendMail = new SendMail(parent.sketchPath());
     loadFrames();
+    try {
+      file = new File(sketchPath(mailLogFilename));
+      fw = new FileWriter(file, true);
+      bw = new BufferedWriter(fw);
+    }
+    catch (IOException e) {
+      println(e.toString());
+    }
   }
 
   void loadFrames() {
@@ -53,7 +70,7 @@ class Selfie extends Thread {
     show();
     takePic();
   }
-  
+
   public void reset() {
     currentPic = 0;
     takingPic = -1;
@@ -85,16 +102,19 @@ class Selfie extends Thread {
   public void savePic(int p) {
     croppedPic.copy(pictures[p], 0, 0, 720, 720, 0, 0, 720, 720);
     selected = p;
-   // croppedPic.save(imgFileName);
+    // croppedPic.save(imgFileName);
   }
 
-  public void setMailAddress(String target) {
+  public void setMailAddress(String target, boolean ad) {
     mailAddress = target;
+    addvertise = ad;
   }
-  
+
+  // sending the mail
   public void run() {
     if (!EmailValidator.getInstance().isValid(mailAddress)) {
       println("Illegal email address: " + mailAddress);
+      logMail(mailAddress, false, false, false);
       return;
     }
     try {
@@ -105,16 +125,35 @@ class Selfie extends Thread {
       mailPicPG.endDraw();
       mailPicPG.save(imgFileName);
       sendMail.send(mailAddress);
+      logMail(mailAddress, addvertise, true, true);
     }
     catch (NoSuchMethodError er) {
       println(er.toString());
+      logMail(mailAddress, addvertise, true, false);
     }
     catch (Exception ex) {
       println("Error sending mail to "+mailAddress);
       println(ex.toString());
+      logMail(mailAddress, addvertise, true, false);
     }
   }
 
+  void logMail(String mailAddress, boolean addvertise, boolean valid, boolean success) {
+    try {
+      bw.write(mailAddress + "\tAddvertise: " + (addvertise ? "OK":"NO") + "\tValid: " + (valid ? "OK" : "NO") + "\tSuccess: " + (success ? "Y" : "N") + "\n");
+    }
+    catch (IOException e) {
+      println(e.toString());
+    }
+    finally {
+      try {
+        if (bw != null) bw.flush();
+      }
+      catch (IOException e) {
+        println(e.toString());
+      }
+    }
+  }
 
   public void showSelected() {
     image (croppedPic, 837, 164, 284, 284);

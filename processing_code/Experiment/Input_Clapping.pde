@@ -10,7 +10,7 @@ class Input_Clapping extends Input {
   float prevVol = 0;
   boolean firstMeasure;
 
-  final float threshold = 0.1;
+  final float threshold = 0.07; //0.1;
 
   public Input_Clapping(PApplet par, Logger log, Resetter res) {
     super(par, log, res);

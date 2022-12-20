@@ -1,6 +1,6 @@
 final color initColor = color(100, 255, 50);  // This is in HSB, but the rest of the sketch uses RGB, so we emulate it
 final int initX = 220;
-final int initY = 0;
+final int initY = 999; //0;
 final int resetTime = 5000;
 final int minDelayBetCmds = 100;
 final int colorWhiteClapJumpVal = 50;
@@ -8,7 +8,7 @@ final int colorWhiteTouchJumpVal = 25;
 final int powerClapJumpVal = 50;
 final int powerTouchJumpVal = 15;
 final int verticalClapJumpVal = 200;
-final int verticalTouchJumpVal = 50;
+final int verticalTouchJumpVal = 100; //50;
 final int horizontalClapJumpVal = 56;
 final int horizontalTouchJumpVal = 12;
 final int maxPower = 100;
@@ -68,7 +68,7 @@ class LightPanel {
     } else {
       if (millis() > resetTimer + resetTime) {
         resetFinished = true;
-        write("S -4\n");  // set light shape and size. positive number = circle. negative = square.
+        write("S -5\n");  // set light shape and size. positive number = circle. negative = square.
         rateTimer = millis() + minDelayBetCmds;
       }
     }

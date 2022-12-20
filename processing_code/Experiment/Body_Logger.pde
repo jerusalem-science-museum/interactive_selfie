@@ -1,6 +1,7 @@
 class Body_Logger {
   KinectPV2 kinect;
   Table session;
+  String userID;
   String sessionTimestamp;
   int activeSkeleton;
   Date date;
@@ -9,7 +10,8 @@ class Body_Logger {
     kinect = knct;
   }
 
-  public void begin(String sts) {
+  public void begin(String user, String sts) {
+    userID = user;
     sessionTimestamp = sts;
 
     session = new Table();
@@ -169,12 +171,11 @@ class Body_Logger {
   }
 
   public void addAction(String action) {
-    println("action added: "+action);
     TableRow newRow = session.addRow();
     newRow.setString("Action", action);
   }
 
   public void end() {
-    saveTable(session, "../logs/" + sessionTimestamp + "/BodyLog.csv");
+    saveTable(session, "../logs/" + userID + "-" + sessionTimestamp + "/BodyLog.csv");
   }
 }

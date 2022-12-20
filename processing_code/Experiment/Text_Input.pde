@@ -16,6 +16,8 @@ static class Text_Input {
   int txtLines;  // lines that have text in them. 0 = none or 1 line
   int scrollL;
   int scrollC;
+  //static PFont hebEngFont;
+  //static PFont arabEngFont;
 
   public Text_Input (PApplet par, int tx, int ty, int tw, int tl, Lang ln) {
     x = tx;
@@ -26,8 +28,6 @@ static class Text_Input {
     else align = RIGHT;
     active = false;
     parent = par;
-    parent.textFont(parent.createFont("gisha.ttf", 36));
-    parent.textLeading(42);
   }
 
   public void show() {
@@ -258,6 +258,7 @@ static class Text_Input {
 
   public boolean touched(int mx, int my) {
     if (showText && (mx>=x) && (mx<=x+w) && (my>=y) && (my<=y+(lines*42))) {
+      showOSK();
       if (!active) {
         active = true;
       } else {
@@ -383,6 +384,29 @@ static class Text_Input {
     }
   }
 
+  static void showOSK() {
+    try {
+      String line;
+      boolean foundOsk = false;
+      Process p = Runtime.getRuntime().exec(System.getenv("windir") +"\\system32\\"+"tasklist.exe");
+      BufferedReader input =
+        new BufferedReader(new InputStreamReader(p.getInputStream()));
+      while ((line = input.readLine()) != null) {
+        if (line.startsWith("osk.exe")) foundOsk = true;
+      }
+      input.close();
+      if (!foundOsk) {
+        robot.keyPress(java.awt.event.KeyEvent.VK_ALT);
+        robot.keyPress(java.awt.event.KeyEvent.VK_K);
+        robot.keyRelease(java.awt.event.KeyEvent.VK_K);
+        robot.keyRelease(java.awt.event.KeyEvent.VK_ALT);
+      }
+    }
+    catch (Exception err) {
+      err.printStackTrace();
+    }
+  }
+
   static void hideOSK() {
     try {
       String line;
@@ -392,7 +416,7 @@ static class Text_Input {
         new BufferedReader(new InputStreamReader(p.getInputStream()));
       while ((line = input.readLine()) != null) {
         if (line.startsWith("osk.exe")) foundOsk = true;
-                println(line); //<-- Parse data here.
+//                println(line); //<-- Parse data here.
       }
       input.close();
       if (foundOsk) {
