@@ -26,7 +26,7 @@ class Selfie implements Runnable { //extends Thread {
   File file;
   FileWriter fw;
   BufferedWriter bw;
-  
+
   final String imgFileName = "selfie.png";
 
   public Selfie(PApplet par, KinectPV2 knct) {
@@ -102,7 +102,12 @@ class Selfie implements Runnable { //extends Thread {
   public void savePic(int p) {
     croppedPic.copy(pictures[p], 0, 0, 720, 720, 0, 0, 720, 720);
     selected = p;
-    // croppedPic.save(imgFileName);
+    mailPicPG.beginDraw();
+    mailPicPG.image(croppedPic, 0, 0, 382, 382);
+    mailPicPG.image(frame382, 0, 0);
+    mailPicPG.mask(frameMask);
+    mailPicPG.endDraw();
+    mailPicPG.save(imgFileName);
   }
 
   public void setMailAddress(String target, boolean ad) {
@@ -118,12 +123,6 @@ class Selfie implements Runnable { //extends Thread {
       return;
     }
     try {
-      mailPicPG.beginDraw();
-      mailPicPG.image(croppedPic, 0, 0, 382, 382);
-      mailPicPG.image(frame382, 0, 0);
-      mailPicPG.mask(frameMask);
-      mailPicPG.endDraw();
-      mailPicPG.save(imgFileName);
       sendMail.send(mailAddress);
       logMail(mailAddress, addvertise, true, true);
     }
