@@ -188,4 +188,8 @@ class Logger {
       recordingGesture = false;
     }
   }
+  
+  public int getUserId() {
+    return userID;
+  }
 }

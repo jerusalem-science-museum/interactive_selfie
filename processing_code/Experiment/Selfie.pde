@@ -21,6 +21,8 @@ class Selfie implements Runnable { //extends Thread {
   String mailAddress;
   boolean addvertise;
   SendMail sendMail;
+  
+  Logger logger;
 
   final String mailLogFilename = "maillog.txt";
   File file;
@@ -29,7 +31,7 @@ class Selfie implements Runnable { //extends Thread {
 
   final String imgFileName = "selfie.png";
 
-  public Selfie(PApplet par, KinectPV2 knct) {
+  public Selfie(PApplet par, KinectPV2 knct, Logger log) {
     parent = par;
     kinect = knct;
     pictures = new PImage[5];
@@ -48,6 +50,7 @@ class Selfie implements Runnable { //extends Thread {
     catch (IOException e) {
       println(e.toString());
     }
+    logger= log;
   }
 
   void loadFrames() {
@@ -99,7 +102,7 @@ class Selfie implements Runnable { //extends Thread {
     }
   }
 
-  public void savePic(int p) {
+  public void savePic(int p, boolean saveToFolder) {
     croppedPic.copy(pictures[p], 0, 0, 720, 720, 0, 0, 720, 720);
     selected = p;
     mailPicPG.beginDraw();
@@ -108,6 +111,9 @@ class Selfie implements Runnable { //extends Thread {
     mailPicPG.mask(frameMask);
     mailPicPG.endDraw();
     mailPicPG.save(imgFileName);
+    if (saveToFolder) {
+      mailPicPG.save("../logs/selfies/" + logger.getUserId() + ".jpg");
+    }
   }
 
   public void setMailAddress(String target, boolean ad) {

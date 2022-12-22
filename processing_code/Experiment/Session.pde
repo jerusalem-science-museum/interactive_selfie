@@ -125,7 +125,7 @@ class TSession extends GraphicsDict {
     pose = vision.createSingleHumanPoseEstimation();
     pose.setup();
 
-    selfie = new Selfie(parent, kinect);
+    selfie = new Selfie(parent, kinect, logger);
     println("Connected COM ports:");
     printArray(Serial.list());
     if (Serial.list().length > 0)
@@ -646,7 +646,7 @@ class TSession extends GraphicsDict {
       if ((x>53) && (x<1313) && (y>318) && (y<558)) {
         int p = 4 - (x-53) / 252;
         p = constrain(p, 0, 4); // just making sure...
-        selfie.savePic(p);
+        selfie.savePic(p, participating);
         button_next.show();
       }
       if (button_next.touched(x, y)) {
@@ -762,7 +762,7 @@ class TSession extends GraphicsDict {
         button_next.hide();
       }
       if (button_next.touched(x, y)) {
-        logger.log("Question3 (Binary)",
+        logger.log("Question6 (Binary)",
           (checkbox_quest_control_voice.getState() ? 1 : 0) +
           (checkbox_quest_control_touch.getState() ? 2 : 0) +
           (checkbox_quest_control_thought.getState() ? 4 : 0) +
