@@ -176,6 +176,6 @@ class Body_Logger {
   }
 
   public void end() {
-    saveTable(session, "../logs/" + userID + "-" + sessionTimestamp + "/BodyLog.csv");
+    saveTable(session, "../logs/gestures/" + userID + "-" + sessionTimestamp + "/BodyLog.csv");
   }
 }

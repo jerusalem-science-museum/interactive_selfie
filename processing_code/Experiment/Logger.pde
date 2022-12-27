@@ -146,7 +146,7 @@ class Logger {
   public void startGestureRecord(String recName, boolean headGes) {  // should be called inside the session state machine. name will be userID + mission num + selected input
     if (active) {
       gestureTable = new Table();
-      gestureFileName = "../logs/" + userIDstr + "-" + sessionTimestamp + "/" + recName + ".csv";
+      gestureFileName = "../logs/gestures/" + userIDstr + "-" + sessionTimestamp + "/" + recName + ".csv";
       recordingGesture = true;
       headGesture = headGes;
       if (headGesture) {
