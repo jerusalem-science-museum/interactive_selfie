@@ -687,9 +687,11 @@ class TSession extends GraphicsDict {
           println(ex);
         }
         if (participating) {
-          button_sel_question_1.show();
-          button_sel_question_2.show();
-          state = State.QUESTIONARE_0;
+          Text_Input.showOSK(lang);
+          text_get_age.show();
+          text_get_age.begin();
+          text_get_profession.show();
+          state = State.QUESTIONARE_9;
         } else {
           globalTimer = millis();
           state = State.GOODBYE_THANKS;
@@ -895,11 +897,9 @@ class TSession extends GraphicsDict {
         Text_Input.showOSK(lang);
         text_further_ideas.hide();
         text_further_ideas.end();
-        text_get_age.show();
-        text_get_age.begin();
-        text_get_profession.show();
         button_next.hide();
-        state = State.QUESTIONARE_9;
+        globalTimer = millis();
+        state = State.GOODBYE_THANKS;
       }
       break;
 
@@ -956,8 +956,9 @@ class TSession extends GraphicsDict {
         rb_handedness_right.hide();
         rb_handedness_left.hide();
         button_next.hide();
-        globalTimer = millis();
-        state = State.GOODBYE_THANKS;
+        button_sel_question_1.show();
+        button_sel_question_2.show();
+        state = State.QUESTIONARE_0;
       }
       break;
 
@@ -967,7 +968,7 @@ class TSession extends GraphicsDict {
     default:
       break;
     }
-    
+
     if (button_restart.touched(x, y)) {
       Text_Input.hideOSK();
       end();

@@ -192,4 +192,8 @@ class Logger {
   public int getUserId() {
     return userID;
   }
+  
+    public String getUserIdStr() {
+    return userIDstr;
+  }
 }

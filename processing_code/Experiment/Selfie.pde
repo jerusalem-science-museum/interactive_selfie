@@ -112,7 +112,7 @@ class Selfie implements Runnable { //extends Thread {
     mailPicPG.endDraw();
     mailPicPG.save(imgFileName);
     if (saveToFolder) {
-      mailPicPG.save("../logs/selfies/" + logger.getUserId() + ".jpg");
+      mailPicPG.save("../logs/selfies/" + logger.getUserIdStr() + ".jpg");
     }
   }
 
