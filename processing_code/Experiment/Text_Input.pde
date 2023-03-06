@@ -355,29 +355,8 @@ static class Text_Input {
 
   static void showOSK(Lang ln) {
     try {
-      String line;
-      boolean foundOsk = false;
-      Process p = Runtime.getRuntime().exec(System.getenv("windir") +"\\system32\\"+"tasklist.exe");
-      BufferedReader input =
-        new BufferedReader(new InputStreamReader(p.getInputStream()));
-      while ((line = input.readLine()) != null) {
-        if (line.startsWith("osk.exe")) foundOsk = true;
-        //        println(line); //<-- Parse data here.
-      }
-      input.close();
-      if (!foundOsk) {
-        setLang(ln);
-        robot.keyPress(java.awt.event.KeyEvent.VK_ALT);
-        robot.keyPress(java.awt.event.KeyEvent.VK_K);
-        robot.keyRelease(java.awt.event.KeyEvent.VK_K);
-        robot.keyRelease(java.awt.event.KeyEvent.VK_ALT);
-        //robot.keyPress(java.awt.event.KeyEvent.VK_WINDOWS);
-        //robot.keyPress(java.awt.event.KeyEvent.VK_CONTROL);
-        //robot.keyPress(java.awt.event.KeyEvent.VK_O);
-        //robot.keyRelease(java.awt.event.KeyEvent.VK_O);
-        //robot.keyRelease(java.awt.event.KeyEvent.VK_WINDOWS);
-        //robot.keyRelease(java.awt.event.KeyEvent.VK_CONTROL);
-      }
+      setLang(ln);
+      showOSK();
     }
     catch (Exception err) {
       err.printStackTrace();
@@ -386,16 +365,10 @@ static class Text_Input {
 
   static void showOSK() {
     try {
-      String line;
-      boolean foundOsk = false;
-      Process p = Runtime.getRuntime().exec(System.getenv("windir") +"\\system32\\"+"tasklist.exe");
-      BufferedReader input =
-        new BufferedReader(new InputStreamReader(p.getInputStream()));
-      while ((line = input.readLine()) != null) {
-        if (line.startsWith("osk.exe")) foundOsk = true;
-      }
-      input.close();
-      if (!foundOsk) {
+      StringList list = new StringList();
+      StringList err = new StringList();
+      shell(list, err, "tasklist|findstr/C:osk");
+      if (list.size()==0) {
         robot.keyPress(java.awt.event.KeyEvent.VK_ALT);
         robot.keyPress(java.awt.event.KeyEvent.VK_K);
         robot.keyRelease(java.awt.event.KeyEvent.VK_K);
@@ -409,17 +382,10 @@ static class Text_Input {
 
   static void hideOSK() {
     try {
-      String line;
-      boolean foundOsk = false;
-      Process p = Runtime.getRuntime().exec(System.getenv("windir") +"\\system32\\"+"tasklist.exe");
-      BufferedReader input =
-        new BufferedReader(new InputStreamReader(p.getInputStream()));
-      while ((line = input.readLine()) != null) {
-        if (line.startsWith("osk.exe")) foundOsk = true;
-//                println(line); //<-- Parse data here.
-      }
-      input.close();
-      if (foundOsk) {
+      StringList list = new StringList();
+      StringList err = new StringList();
+      shell(list, err, "tasklist|findstr/C:osk");
+      if (list.size()>0) {
         robot.keyPress(java.awt.event.KeyEvent.VK_ALT);
         robot.keyPress(java.awt.event.KeyEvent.VK_K);
         robot.keyRelease(java.awt.event.KeyEvent.VK_K);
