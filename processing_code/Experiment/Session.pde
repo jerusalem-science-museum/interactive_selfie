@@ -690,12 +690,71 @@ class TSession extends GraphicsDict {
           text_get_age.show();
           text_get_age.begin();
           text_get_profession.show();
-          state = State.QUESTIONARE_9;
+          state = State.GET_PROFESSION_AGE;
         } else {
           Text_Input.hideOSK();
           globalTimer = millis();
           state = State.GOODBYE_THANKS;
         }
+      }
+      break;
+
+    case GET_PROFESSION_AGE:
+      if (text_get_age.touched(x, y)) {
+        text_get_profession.end();
+      }
+      if (text_get_profession.touched(x, y)) {
+        text_get_age.end();
+      }
+      if (button_next.touched(x, y)) {
+        logger.log("Age", int(text_get_age.getText()));
+        logger.log("Profession", text_get_profession.getText());
+        Text_Input.hideOSK();
+        text_get_age.hide();
+        text_get_age.end();
+        text_get_profession.hide();
+        text_get_profession.end();
+        rb_gender_female.show();
+        rb_gender_male.show();
+        rb_education_highschool.show();
+        rb_education_academic.show();
+        rb_education_other.show();
+        rb_handedness_right.show();
+        rb_handedness_left.show();
+        button_next.hide();
+        globalFlag = 0;
+        state = State.GET_GENDER_EDUCATION_HANDEDNESS;
+      }
+      break;
+
+    case GET_GENDER_EDUCATION_HANDEDNESS:
+      if (rb_gender_female.touched(x, y) || rb_gender_male.touched(x, y)) {
+        globalFlag |= 1;
+      }
+      if (rb_education_highschool.touched(x, y) || rb_education_academic.touched(x, y) || rb_education_other.touched(x, y)) {
+        globalFlag |= 2;
+      }
+      if (rb_handedness_right.touched(x, y) || rb_handedness_left.touched(x, y)) {
+        globalFlag |= 4;
+      }
+      if (globalFlag == 7) {
+        button_next.show();
+      }
+      if (button_next.touched(x, y)) {
+        logger.log("Gender", rb_gender_female.getState() ? "Female" : "Male");
+        logger.log("Education", rb_education_highschool.getState() ? "Highschool" : (rb_education_academic.getState() ? "Academic" : "Other"));
+        logger.log("Handedness", rb_handedness_right.getState() ? "Right" : "Left");
+        rb_gender_female.hide();
+        rb_gender_male.hide();
+        rb_education_highschool.hide();
+        rb_education_academic.hide();
+        rb_education_other.hide();
+        rb_handedness_right.hide();
+        rb_handedness_left.hide();
+        button_next.hide();
+        button_sel_question_1.show();
+        button_sel_question_2.show();
+        state = State.QUESTIONARE_0;
       }
       break;
 
@@ -714,7 +773,6 @@ class TSession extends GraphicsDict {
         button_sel_question_4.show();
         button_sel_question_5.show();
         button_next.hide();
-        Text_Input.hideOSK();
         state = State.QUESTIONARE_1;
       }
       break;
@@ -895,72 +953,12 @@ class TSession extends GraphicsDict {
       text_further_ideas.touched(x, y);
       if (button_next.touched(x, y)) {
         logger.log("Further_Ideas", text_further_ideas.getText());
-        Text_Input.showOSK(lang);
+        Text_Input.hideOSK();
         text_further_ideas.hide();
         text_further_ideas.end();
         button_next.hide();
         globalTimer = millis();
         state = State.GOODBYE_THANKS;
-      }
-      break;
-
-    case QUESTIONARE_9:
-    
-      if (text_get_age.touched(x, y)) {
-        text_get_profession.end();
-      }
-      if (text_get_profession.touched(x, y)) {
-        text_get_age.end();
-      }
-      if (button_next.touched(x, y)) {
-        logger.log("Age", int(text_get_age.getText()));
-        logger.log("Profession", text_get_profession.getText());
-        Text_Input.hideOSK();
-        text_get_age.hide();
-        text_get_age.end();
-        text_get_profession.hide();
-        text_get_profession.end();
-        rb_gender_female.show();
-        rb_gender_male.show();
-        rb_education_highschool.show();
-        rb_education_academic.show();
-        rb_education_other.show();
-        rb_handedness_right.show();
-        rb_handedness_left.show();
-        button_next.hide();
-        globalFlag = 0;
-        state = State.QUESTIONARE_10;
-      }
-      break;
-
-    case QUESTIONARE_10:
-      if (rb_gender_female.touched(x, y) || rb_gender_male.touched(x, y)) {
-        globalFlag |= 1;
-      }
-      if (rb_education_highschool.touched(x, y) || rb_education_academic.touched(x, y) || rb_education_other.touched(x, y)) {
-        globalFlag |= 2;
-      }
-      if (rb_handedness_right.touched(x, y) || rb_handedness_left.touched(x, y)) {
-        globalFlag |= 4;
-      }
-      if (globalFlag == 7) {
-        button_next.show();
-      }
-      if (button_next.touched(x, y)) {
-        logger.log("Gender", rb_gender_female.getState() ? "Female" : "Male");
-        logger.log("Education", rb_education_highschool.getState() ? "Highschool" : (rb_education_academic.getState() ? "Academic" : "Other"));
-        logger.log("Handedness", rb_handedness_right.getState() ? "Right" : "Left");
-        rb_gender_female.hide();
-        rb_gender_male.hide();
-        rb_education_highschool.hide();
-        rb_education_academic.hide();
-        rb_education_other.hide();
-        rb_handedness_right.hide();
-        rb_handedness_left.hide();
-        button_next.hide();
-        button_sel_question_1.show();
-        button_sel_question_2.show();
-        state = State.QUESTIONARE_0;
       }
       break;
 
@@ -982,6 +980,7 @@ class TSession extends GraphicsDict {
     for (Button b : allButtons) b.hide();
     for (Text_Input t : allTexts) t.hide();
     for (Slider s : allSliders) s.hide();
+    Text_Input.hideOSK();
     sessionRunning = false;
   }
 
@@ -1024,7 +1023,7 @@ class TSession extends GraphicsDict {
 
   public void keyPressed(char key) {
     for (Text_Input t : allTexts) t.keyPressed(key);
-    if (state == State.QUESTIONARE_9) {
+    if (state == State.GET_PROFESSION_AGE) {
       if ((text_get_age.getText().length()>0) && (text_get_profession.getText().length()>0)) {
         button_next.show();
       }
@@ -1117,6 +1116,8 @@ enum State {
     MISSION_5_SELFIE,
     SHOW_SELECT_ALL_SELFIES,
     GET_EMAIL,
+    GET_PROFESSION_AGE,
+    GET_GENDER_EDUCATION_HANDEDNESS,
     QUESTIONARE_0,
     QUESTIONARE_1,
     QUESTIONARE_2,
@@ -1126,7 +1127,5 @@ enum State {
     QUESTIONARE_6,
     QUESTIONARE_7,
     QUESTIONARE_8,
-    QUESTIONARE_9,
-    QUESTIONARE_10,
     GOODBYE_THANKS
 }

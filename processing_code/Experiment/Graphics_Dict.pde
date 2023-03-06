@@ -59,6 +59,8 @@ class GraphicsDict {
 
     graphicFileName.put(State.SHOW_SELECT_ALL_SELFIES, "0029_screen_select selfie.png");
     graphicFileName.put(State.GET_EMAIL, "0030_screen_email.png");
+    graphicFileName.put(State.GET_PROFESSION_AGE, "0039_questionnaire_stage3_page1.png");
+    graphicFileName.put(State.GET_GENDER_EDUCATION_HANDEDNESS, "0039_questionnaire_stage3_page2.png");
     graphicFileName.put(State.QUESTIONARE_0, "0031_questionnaire_stage1_page1.png");
     graphicFileName.put(State.QUESTIONARE_1, "0032_questionnaire_stage1_page2.png");
     graphicFileName.put(State.QUESTIONARE_2, "0033_questionnaire_stage2_page1.png");
@@ -68,8 +70,6 @@ class GraphicsDict {
     graphicFileName.put(State.QUESTIONARE_6, "0037_questionnaire_stage2_page5.png");
     graphicFileName.put(State.QUESTIONARE_7, "0038_questionnaire_stage2_page6.png");
     graphicFileName.put(State.QUESTIONARE_8, "0038A_questionnaire_stage2_page6.png");
-    graphicFileName.put(State.QUESTIONARE_9, "0039_questionnaire_stage3_page1.png");
-    graphicFileName.put(State.QUESTIONARE_10, "0039_questionnaire_stage3_page2.png");
     graphicFileName.put(State.GOODBYE_THANKS, "0040_screen_thank you.png");
   }
 }
