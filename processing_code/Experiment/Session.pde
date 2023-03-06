@@ -714,6 +714,7 @@ class TSession extends GraphicsDict {
         button_sel_question_4.show();
         button_sel_question_5.show();
         button_next.hide();
+        Text_Input.hideOSK();
         state = State.QUESTIONARE_1;
       }
       break;
