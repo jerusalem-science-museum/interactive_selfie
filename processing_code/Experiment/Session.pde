@@ -669,7 +669,6 @@ class TSession extends GraphicsDict {
         text_get_mail0.end();
       }
       if (button_next.touched(x, y)) {
-        Text_Input.hideOSK();
         text_get_mail0.hide();
         text_get_mail0.end();
         text_get_mail1.hide();
@@ -693,6 +692,7 @@ class TSession extends GraphicsDict {
           text_get_profession.show();
           state = State.QUESTIONARE_9;
         } else {
+          Text_Input.hideOSK();
           globalTimer = millis();
           state = State.GOODBYE_THANKS;
         }
@@ -904,6 +904,7 @@ class TSession extends GraphicsDict {
       break;
 
     case QUESTIONARE_9:
+    
       if (text_get_age.touched(x, y)) {
         text_get_profession.end();
       }
